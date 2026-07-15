@@ -3,1388 +3,671 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام ERP - إدارة المقاولات</title>
+    <title>ENTERPRISE ERP - نظام إدارة شركات المقاولات والإنشاءات المتكامل</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
-    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <style>
-        /* ===== الأنماط الأساسية ===== */
         :root {
-            --primary: #0B5ED7;
-            --success: #198754;
-            --warning: #FFC107;
-            --danger: #DC3545;
-            --bg: #F7F8FA;
-            --card: #FFFFFF;
+            --primary-color: #0B5ED7;
+            --success-color: #198754;
+            --warning-color: #FFC107;
+            --danger-color: #DC3545;
+            --bg-color: #F7F8FA;
+            --card-bg: #FFFFFF;
+            --text-color: #212529;
+            --sidebar-width: 280px;
+            --glass-blur: blur(12px);
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.25);
         }
-        
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+
+        body.dark-mode {
+            --bg-color: #0F172A;
+            --card-bg: #1E293B;
+            --text-color: #F8FAFC;
+            --glass-bg: rgba(30, 41, 59, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.05);
+        }
+
         body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--bg);
-            color: #333;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease;
         }
-        
-        /* ===== Loader ===== */
-        #loader {
+
+        /* App Layout Container Setup */
+        #app-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        #sidebar {
+            width: var(--sidebar-width);
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            border-left: 1px solid var(--glass-border);
+            position: fixed;
+            top: 0; bottom: 0; right: 0;
+            z-index: 1050;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #main-viewport {
+            margin-right: var(--sidebar-width);
+            flex-grow: 1;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .enterprise-navbar {
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            border-bottom: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 15px 25px;
+            margin-bottom: 30px;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.08);
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 10px;
+            margin: 4px 15px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .menu-link:hover, .menu-link.active {
+            background: var(--primary-color);
+            color: #FFFFFF !important;
+        }
+
+        .menu-link i {
+            margin-left: 12px;
+            font-size: 1.1rem;
+        }
+
+        #loader-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(255,255,255,0.9);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px);
             z-index: 9999;
-            transition: opacity 0.5s;
-        }
-        #loader.hidden { opacity: 0; pointer-events: none; }
-        
-        /* ===== Sidebar ===== */
-        #sidebar {
-            position: fixed;
-            top: 0; right: 0; bottom: 0;
-            width: 260px;
-            background: var(--card);
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-            overflow-y: auto;
-            z-index: 1000;
-            transition: transform 0.3s;
-        }
-        
-        .sidebar-brand {
-            padding: 20px;
-            text-align: center;
-            border-bottom: 1px solid #eee;
-        }
-        .sidebar-brand h3 { color: var(--primary); font-weight: 700; }
-        
-        .menu-item {
-            padding: 12px 25px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border-right: 3px solid transparent;
-            color: #666;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .menu-item:hover, .menu-item.active {
-            background: #f0f4ff;
-            color: var(--primary);
-            border-right-color: var(--primary);
-        }
-        .menu-item i { width: 20px; text-align: center; }
-        
-        /* ===== Main Content ===== */
-        #main-content {
-            margin-right: 260px;
-            min-height: 100vh;
-        }
-        
-        /* ===== Navbar ===== */
-        #navbar {
-            height: 70px;
-            background: var(--card);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 0 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-        }
-        
-        .navbar-search input {
-            padding: 8px 40px 8px 15px;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            width: 300px;
-            background: var(--bg);
-        }
-        .navbar-search input:focus {
-            width: 400px;
-            outline: none;
-            border-color: var(--primary);
-        }
-        .navbar-search { position: relative; }
-        .navbar-search i {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #999;
-        }
-        
-        .navbar-actions {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-        }
-        .avatar {
-            width: 40px; height: 40px;
-            border-radius: 50%;
-            background: var(--primary);
-            color: white;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-weight: 700;
         }
-        
-        /* ===== Page Content ===== */
-        #page-content { padding: 30px; }
-        
-        /* ===== Cards ===== */
-        .card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
-            transition: transform 0.3s, box-shadow 0.3s;
-            background: var(--card);
-        }
-        .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 25px rgba(0,0,0,0.12);
-        }
-        .card-header {
-            background: transparent;
-            border-bottom: 1px solid #f0f0f0;
-            padding: 20px 25px;
-            font-weight: 600;
-        }
-        .card-body { padding: 25px; }
-        
-        /* ===== Stat Cards ===== */
-        .stat-card {
-            padding: 20px;
-            border-radius: 15px;
-            position: relative;
-            overflow: hidden;
-        }
-        .stat-icon {
-            position: absolute;
-            top: 20px; left: 20px;
-            font-size: 30px;
-            opacity: 0.2;
-        }
-        .stat-number { font-size: 28px; font-weight: 700; }
-        .stat-label { font-size: 14px; color: #666; margin-top: 5px; }
-        
-        /* ===== Progress Bar ===== */
-        .progress-bar-custom {
-            height: 8px;
-            border-radius: 10px;
-            background: #e9ecef;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            border-radius: 10px;
-            transition: width 0.5s;
-        }
-        
-        /* ===== Badges ===== */
-        .badge-status {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        .badge-status.active { background: #d4edda; color: #155724; }
-        .badge-status.inactive { background: #f8d7da; color: #721c24; }
-        .badge-status.pending { background: #fff3cd; color: #856404; }
-        
-        /* ===== Login Page ===== */
-        .login-page {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #0B5ED7, #198754);
-        }
-        .login-container {
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(10px);
-            padding: 40px;
-            border-radius: 20px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        }
-        .login-header { text-align: center; margin-bottom: 30px; }
-        .login-header h2 { color: var(--primary); font-weight: 700; }
-        .login-header p { color: #666; }
-        
-        /* ===== Activity Timeline ===== */
-        .activity-item {
-            padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0;
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-        .activity-time { font-size: 12px; color: #999; min-width: 80px; }
-        .activity-content { flex: 1; }
-        
-        /* ===== Responsive ===== */
-        @media (max-width: 768px) {
+
+        #loader-overlay.hidden { display: none; }
+
+        @media (max-width: 992px) {
             #sidebar { transform: translateX(100%); }
             #sidebar.open { transform: translateX(0); }
-            #main-content { margin-right: 0; }
-            .navbar-search input { width: 150px; }
-            .navbar-search input:focus { width: 200px; }
-            #page-content { padding: 15px; }
+            #main-viewport { margin-right: 0; }
         }
-        
-        /* ===== Dark Mode ===== */
-        body.dark-mode {
-            --bg: #1a1a2e;
-            --card: #16213e;
-            color: #e0e0e0;
-        }
-        body.dark-mode #sidebar { background: #16213e; }
-        body.dark-mode #sidebar .sidebar-brand { border-bottom-color: #2a3a5e; }
-        body.dark-mode #sidebar .sidebar-brand h3 { color: #4a9eff; }
-        body.dark-mode .menu-item { color: #a0aec0; }
-        body.dark-mode .menu-item:hover, body.dark-mode .menu-item.active {
-            background: #1a2a4e;
-            color: #4a9eff;
-        }
-        body.dark-mode #navbar { background: #16213e; }
-        body.dark-mode .navbar-search input {
-            background: #1a2a4e;
-            border-color: #2a3a5e;
-            color: #e0e0e0;
-        }
-        body.dark-mode .stat-label { color: #a0aec0; }
-        body.dark-mode .login-container { background: rgba(22,33,62,0.95); }
-        body.dark-mode .login-container .login-header h2 { color: #4a9eff; }
-        body.dark-mode .login-container .login-header p { color: #a0aec0; }
-        body.dark-mode .form-control {
-            background: #1a2a4e;
-            border-color: #2a3a5e;
-            color: #e0e0e0;
-        }
-        body.dark-mode .form-control:focus {
-            background: #1a2a4e;
-            border-color: #4a9eff;
-            color: #e0e0e0;
+
+        .kpi-icon {
+            width: 54px; height: 54px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            color: #fff;
         }
     </style>
 </head>
 <body>
 
-<div id="loader">
-    <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">جاري التحميل...</span>
+<div id="loader-overlay">
+    <div class="text-center">
+        <div class="spinner-border text-primary" style="width: 3.5rem; height: 3.5rem;" role="status"></div>
+        <h5 class="text-light mt-4 font-monospace">جاري استدعاء معمارية البيانات السحابية الحية للـ ERP...</h5>
     </div>
 </div>
 
-<div id="app">
-    
-    <div id="sidebar">
-        <div class="sidebar-brand">
-            <h3><i class="fas fa-building"></i> ERP</h3>
-            <small class="text-muted">نظام إدارة المقاولات</small>
+<div id="auth-container" class="d-none">
+    <div class="container d-flex align-items-center justify-content-center min-vh-100">
+        <div class="card glass-card p-5 w-100 style-login-box" style="max-width: 460px;">
+            <div class="text-center mb-4">
+                <i class="fas fa-building-shield text-primary" style="font-size: 3.5rem;"></i>
+                <h3 class="fw-bold mt-3">بوابة الصلاحيات الموحدة</h3>
+                <p class="text-muted">مجموعة المقاولات والإنشاءات الهندسية العالمية</p>
+            </div>
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label class="form-label font-monospace">البريد الإلكتروني المهني</label>
+                    <input type="email" class="form-control form-control-lg" id="loginEmail" value="admin@enterprise-erp.com" required>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label font-monospace">كلمة المرور المشفرة</label>
+                    <input type="password" class="form-control form-control-lg" id="loginPassword" value="Admin@Enterprise2026" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg w-100 text-uppercase fw-bold shadow-sm" id="loginBtn">تأكيد الهوية الرقمية</button>
+            </form>
         </div>
-        <div class="sidebar-menu" id="sidebarMenu">
-            </div>
     </div>
-    
-    <div id="main-content">
-        
-        <nav id="navbar">
-            <div class="d-flex align-items-center gap-3">
-                <button class="btn btn-link d-md-none" id="toggleSidebar">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div class="navbar-search">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="بحث..." id="globalSearch">
-                </div>
+</div>
+
+<div id="app-layout" class="d-none">
+    <aside id="sidebar">
+        <div class="p-4 border-bottom border-light text-center">
+            <h4 class="fw-bold mb-0 text-primary"><i class="fas fa-city me-2"></i> ENTERPRISE ERP</h4>
+            <small class="text-muted font-monospace">إدارة قطاع الإنشاءات والمقاولات</small>
+        </div>
+        <div class="py-3 overflow-y-auto" style="max-height: calc(100vh - 100px);">
+            <a href="#" class="menu-link active" data-target="dashboard"><i class="fas fa-chart-line"></i> لوحة التحكم التنفيذية</a>
+            <a href="#" class="menu-link" data-target="projects"><i class="fas fa-kaaba"></i> إدارة المشاريع والمواقع</a>
+            <a href="#" class="menu-link" data-target="purchase_requests"><i class="fas fa-code-pull-request"></i> خطوط اعتمادات الشراء</a>
+            <a href="#" class="menu-link" data-target="clients"><i class="fas fa-handshake"></i> الشركاء والعملاء الكبار</a>
+            <a href="#" class="menu-link" data-target="suppliers"><i class="fas fa-truck-field"></i> سلاسل الإمداد والموردين</a>
+            <a href="#" class="menu-link" data-target="warehouses"><i class="fas fa-warehouse"></i> اللوجستيات والمستودعات</a>
+            <a href="#" class="menu-link" data-target="equipment"><i class="fas fa-screwdriver-wrench"></i> الأسطول والمعدات الثقيلة</a>
+            <a href="#" class="menu-link" data-target="employees"><i class="fas fa-users-gear"></i> الموارد البشرية والرواتب</a>
+            <a href="#" class="menu-link" data-target="accounting"><i class="fas fa-vault"></i> المحاسبة والقيود والمالية</a>
+            <a href="#" class="menu-link" data-target="logs"><i class="fas fa-fingerprint"></i> سجلات الأمان والتدقيق</a>
+        </div>
+    </aside>
+
+    <main id="main-viewport">
+        <nav class="enterprise-navbar d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-light d-lg-none me-3" id="mobile-toggle"><i class="fas fa-bars"></i></button>
+                <h5 class="fw-bold mb-0" id="current-module-title">النظام التنفيذي الموحد للشركة</h5>
             </div>
-            <div class="navbar-actions">
-                <div class="user-profile" id="userProfile">
-                    <span id="userName">مستخدم</span>
-                    <div class="avatar" id="userAvatar">U</div>
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-outline-secondary rounded-circle" id="theme-switcher"><i class="fas fa-moon"></i></button>
+                <div class="d-flex align-items-center gap-2 border-start ps-3">
+                    <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width:40px; height:40px;" id="userAvatar">A</div>
+                    <span class="fw-semibold d-none d-md-inline" id="userDisplayName">المدير التنفيذي</span>
                 </div>
-                <button class="btn btn-link" id="themeToggle">
-                    <i class="fas fa-moon"></i>
-                </button>
-                <button class="btn btn-danger btn-sm" id="logoutBtn">
-                    <i class="fas fa-sign-out-alt"></i>
-                </button>
+                <button class="btn btn-danger btn-sm px-3" id="logoutAction"><i class="fas fa-power-off"></i></button>
             </div>
         </nav>
-        
-        <div id="page-content">
-            </div>
-    </div>
+
+        <div id="view-renderer"></div>
+    </main>
 </div>
 
 <script>
-    // ========================================
-    // 1. CONFIG - الإعدادات
-    // ========================================
-    
+    // Configuration Architecture
     const CONFIG = {
-        // !!! انسخ رابط نشر التطبيق (Web App URL) الخاص بك من Google Apps Script وضعه هنا !!!
-        API_URL: 'https://script.google.com/macros/s/AKfycbzROpjirP_gq-Nlnr9r1m9Rb-dB7ufBR_e8ZQlnGGawnXvPJRI7r1sv-NdogT0HMWFv/exec'
+        API_URL: 'https://script.google.com/macros/s/AKfycbywDOefW7F2avDxivizYcffzrXLQGzHN0hRtcEAXUPegK0SbuSUlYlWflv_lmHRnARbEw/exec' // ضع هنا رابط الـ Web App الخاص بك بعد النشر المباشر من Apps Script
     };
-    
-    // ========================================
-    // 2. API - الاتصال بالخادم
-    // ========================================
-    
-    const API = {
-        async request(method, data = {}) {
-            const token = localStorage.getItem('erp_token');
-            const url = new URL(CONFIG.API_URL);
-            
-            if (method === 'GET') {
-                Object.keys(data).forEach(k => url.searchParams.append(k, data[k]));
-            }
-            
-            const options = {
-                method: method
-            };
-            
-            if (method === 'POST') {
-                options.method = 'POST';
-                // إرسال كـ text/plain يمنع المتصفح من إرسال Preflight Request (OPTIONS) وبالتالي تجنب خطأ CORS
-                options.headers = { 'Content-Type': 'text/plain' }; 
-                options.body = JSON.stringify(data);
-            }
-            
-            const response = await fetch(url.toString(), options);
-            return response.json();
-        },
-        
-        get(path, params = {}) {
-            return this.request('GET', { path, token: localStorage.getItem('erp_token'), ...params });
-        },
-        
-        post(data) {
-            return this.request('POST', data);
-        },
-        
-        // المصادقة
-        login(email, password) {
-            return this.post({ action: 'login', email, password });
-        },
-        
-        logout() {
-            return this.post({ action: 'logout', token: localStorage.getItem('erp_token') });
-        },
-        
-        // لوحة التحكم
-        getDashboard() {
-            return this.get('dashboard');
-        },
-        
-        // المستخدمين
-        getUsers() {
-            return this.get('users');
-        },
-        
-        createUser(data) {
-            return this.post({ action: 'createUser', token: localStorage.getItem('erp_token'), ...data });
-        },
-        
-        // المشاريع
-        getProjects() {
-            return this.get('projects');
-        },
-        
-        createProject(data) {
-            return this.post({ action: 'createProject', token: localStorage.getItem('erp_token'), ...data });
-        },
-        
-        updateProject(id, data) {
-            return this.post({ action: 'updateProject', token: localStorage.getItem('erp_token'), id, ...data });
-        },
-        
-        deleteProject(id) {
-            return this.post({ action: 'deleteProject', token: localStorage.getItem('erp_token'), id });
-        },
-        
-        // العملاء
-        getClients() {
-            return this.get('clients');
-        },
-        
-        // الموردين
-        getSuppliers() {
-            return this.get('suppliers');
-        },
-        
-        // المواد
-        getMaterials() {
-            return this.get('materials');
-        },
-        
-        // الموظفين
-        getEmployees() {
-            return this.get('employees');
-        },
-        
-        // المصروفات
-        getExpenses() {
-            return this.get('expenses');
-        },
-        
-        createExpense(data) {
-            return this.post({ action: 'createExpense', token: localStorage.getItem('erp_token'), ...data });
-        },
-        
-        // الإيرادات
-        getIncome() {
-            return this.get('income');
-        },
-        
-        createIncome(data) {
-            return this.post({ action: 'createIncome', token: localStorage.getItem('erp_token'), ...data });
-        }
-    };
-    
-    // ========================================
-    // 3. APP - التطبيق الرئيسي
-    // ========================================
-    
-    class App {
+
+    class EnterpriseERPApplication {
         constructor() {
-            this.currentPage = 'dashboard';
-            this.user = null;
             this.token = localStorage.getItem('erp_token');
-            this.init();
+            this.user = null;
+            this.activeModule = 'dashboard';
+            this.cachedData = {};
+            this.bindCoreGlobalEvents();
+            this.evaluateInitialAccessAuthentication();
         }
-        
-        async init() {
-            // إخفاء الـ loader
-            setTimeout(() => {
-                document.getElementById('loader').classList.add('hidden');
-            }, 500);
+
+        bindCoreGlobalEvents() {
+            const self = this;
+            $('#mobile-toggle').on('click', () => $('#sidebar').toggleClass('open'));
+            $('#theme-switcher').on('click', () => {
+                $('body').toggleClass('dark-mode');
+                const isDark = $('body').hasClass('dark-mode');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                $('#theme-switcher i').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+            });
+            $('#logoutAction').on('click', () => self.terminateSessionAndRedirect());
             
-            // التحقق من التوكن
-            if (this.token) {
+            $(document).on('click', '.menu-link', function(e) {
+                e.preventDefault();
+                $('.menu-link').removeClass('active');
+                $(this).addClass('active');
+                const target = $(this).data('target');
+                self.routeToModule(target);
+            });
+
+            if(localStorage.getItem('theme') === 'dark') {
+                $('body').addClass('dark-mode');
+                $('#theme-switcher i').removeClass('fa-moon').addClass('fa-sun');
+            }
+        }
+
+        showLoader() { $('#loader-overlay').removeClass('hidden'); }
+        hideLoader() { $('#loader-overlay').addClass('hidden'); }
+
+        async evaluateInitialAccessAuthentication() {
+            this.showLoader();
+            if (!this.token) {
+                this.hideLoader();
+                this.displayAuthBox();
+                return;
+            }
+            try {
+                const response = await fetch(`${CONFIG.API_URL}?path=validate&token=${this.token}`);
+                const result = await response.json();
+                if (result.valid) {
+                    this.user = result.user;
+                    this.initializeAndBootOperationalUI();
+                } else {
+                    this.terminateSessionAndRedirect();
+                }
+            } catch (err) {
+                this.terminateSessionAndRedirect();
+            }
+        }
+
+        displayAuthBox() {
+            $('#app-layout').addClass('d-none');
+            $('#auth-container').removeClass('d-none');
+            const self = this;
+            
+            $('#loginForm').off('submit').on('submit', async function(e) {
+                e.preventDefault();
+                self.showLoader();
+                const email = $('#loginEmail').value;
+                const password = $('#loginPassword').value;
+                
                 try {
-                    const result = await this.validateToken();
-                    if (result.valid) {
-                        this.user = result.user;
-                        this.loadApp();
-                        return;
+                    const response = await fetch(CONFIG.API_URL, {
+                        method: 'POST',
+                        mode: 'cors',
+                        body: JSON.stringify({ action: 'login', email, password, ip: '127.0.0.1', device: navigator.userAgent })
+                    });
+                    const res = await response.json();
+                    if (res.success) {
+                        localStorage.setItem('erp_token', res.token);
+                        self.token = res.token;
+                        self.user = res.user;
+                        $('#auth-container').addClass('d-none');
+                        self.initializeAndBootOperationalUI();
+                    } else {
+                        self.hideLoader();
+                        Swal.fire('خطأ أمني', res.message, 'error');
                     }
-                } catch (e) {
-                    console.error('Token validation error:', e);
+                } catch (err) {
+                    self.hideLoader();
+                    Swal.fire('خطأ نظامي', 'فشل الربط المركزي بقاعدة بيانات الـ API الخادمة.', 'error');
                 }
-            }
-            
-            this.showLogin();
-        }
-        
-        async validateToken() {
-            try {
-                // الاتصال بـ API_URL مباشرة لاسترجاع حالة التوكن
-                const response = await fetch(CONFIG.API_URL + '?path=validate&token=' + this.token);
-                return response.json();
-            } catch (e) {
-                return { valid: false };
-            }
-        }
-        
-        loadApp() {
-            // إظهار العناصر الأساسية في حال كانت مخفية بسبب صفحة تسجيل الدخول
-            document.getElementById('sidebar').style.display = 'block';
-            document.getElementById('navbar').style.display = 'flex';
-            
-            this.renderSidebar();
-            this.renderNavbar();
-            this.loadPage('dashboard');
-            this.initEvents();
-            this.initTheme();
-            
-            // تحديث تلقائي كل 30 ثانية
-            setInterval(() => this.refreshData(), 30000);
-        }
-        
-        renderSidebar() {
-            const menu = document.getElementById('sidebarMenu');
-            const items = [
-                { page: 'dashboard', icon: 'fa-chart-pie', label: 'لوحة التحكم' },
-                { page: 'projects', icon: 'fa-project-diagram', label: 'المشاريع' },
-                { page: 'clients', icon: 'fa-users', label: 'العملاء' },
-                { page: 'suppliers', icon: 'fa-truck', label: 'الموردين' },
-                { page: 'materials', icon: 'fa-boxes', label: 'المواد' },
-                { page: 'employees', icon: 'fa-user-tie', label: 'الموظفين' },
-                { page: 'expenses', icon: 'fa-hand-holding-usd', label: 'المصروفات' },
-                { page: 'income', icon: 'fa-money-bill-wave', label: 'الإيرادات' }
-            ];
-            
-            let html = '';
-            items.forEach(item => {
-                const active = this.currentPage === item.page ? 'active' : '';
-                html += `
-                    <div class="menu-item ${active}" data-page="${item.page}">
-                        <i class="fas ${item.icon}"></i>
-                        <span>${item.label}</span>
-                    </div>
-                `;
-            });
-            menu.innerHTML = html;
-            
-            // أحداث القائمة
-            menu.querySelectorAll('.menu-item').forEach(el => {
-                el.addEventListener('click', () => {
-                    const page = el.dataset.page;
-                    this.loadPage(page);
-                    menu.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-                    el.classList.add('active');
-                    if (window.innerWidth <= 768) {
-                        document.getElementById('sidebar').classList.remove('open');
-                    }
-                });
             });
         }
-        
-        renderNavbar() {
-            const name = this.user ? this.user.name : 'مستخدم';
-            const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2);
-            
-            document.getElementById('userName').textContent = name;
-            document.getElementById('userAvatar').textContent = initials;
+
+        initializeAndBootOperationalUI() {
+            $('#userDisplayName').text(this.user.name);
+            $('#userAvatar').text(this.user.name.charAt(0));
+            $('#app-layout').removeClass('d-none');
+            this.routeToModule('dashboard');
         }
-        
-        async loadPage(page) {
-            this.currentPage = page;
-            const content = document.getElementById('page-content');
-            
-            // إظهار loader داخل الصفحة
-            content.innerHTML = `
-                <div class="text-center py-5">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">جاري التحميل...</span>
-                    </div>
-                </div>
-            `;
+
+        terminateSessionAndRedirect() {
+            localStorage.removeItem('erp_token');
+            this.token = null;
+            this.user = null;
+            $('#app-layout').addClass('d-none');
+            this.hideLoader();
+            this.displayAuthBox();
+        }
+
+        async routeToModule(moduleName) {
+            this.activeModule = moduleName;
+            this.showLoader();
+            $('#current-module-title').text($(`.menu-link[data-target="${moduleName}"]`).text());
             
             try {
-                let html = '';
-                switch(page) {
-                    case 'dashboard': html = await this.renderDashboard(); break;
-                    case 'projects': html = await this.renderProjects(); break;
-                    case 'clients': html = await this.renderClients(); break;
-                    case 'suppliers': html = await this.renderSuppliers(); break;
-                    case 'materials': html = await this.renderMaterials(); break;
-                    case 'employees': html = await this.renderEmployees(); break;
-                    case 'expenses': html = await this.renderExpenses(); break;
-                    case 'income': html = await this.renderIncome(); break;
-                    default: html = '<h2>صفحة غير موجودة</h2>';
+                switch(moduleName) {
+                    case 'dashboard': await this.renderDashboardView(); break;
+                    case 'projects': await this.renderProjectsView(); break;
+                    case 'purchase_requests': await this.renderPurchaseRequestsView(); break;
+                    case 'clients': await this.renderGenericTableView('العملاء الكبار وحلفاء الأعمال', 'clients'); break;
+                    case 'suppliers': await this.renderGenericTableView('إدارات الموردين وسلاسل التوريد', 'suppliers'); break;
+                    case 'warehouses': await this.renderGenericTableView('المستودعات والخدمات اللوجستية', 'warehouses'); break;
+                    case 'equipment': await this.renderGenericTableView('حركية الأسطول والمعدات الثقيلة', 'equipment'); break;
+                    case 'employees': await this.renderGenericTableView('الموارد البشرية وكشوف المرتبات', 'employees'); break;
+                    case 'logs': await this.renderLogsView(); break;
+                    default: $('#view-renderer').html('<h3>تحت الإنشاء والمعالجة المتقدمة...</h3>');
                 }
-                content.innerHTML = html;
-                content.classList.add('fade-in');
-                
-                // تهيئة الرسوم البيانية إذا كانت الصفحة هي dashboard
-                if (page === 'dashboard') {
-                    this.initCharts();
-                }
-            } catch (e) {
-                content.innerHTML = `
-                    <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-circle"></i>
-                        خطأ في جلب البيانات: تأكد من تشغيل ونشر الكود في Apps Script وتحديث الرابط API_URL بشكل صحيح.
-                    </div>
-                `;
+            } catch(e) {
+                $('#view-renderer').html('<div class="alert alert-danger">خطأ فني أثناء استرجاع بيانات السحابة المباشرة.</div>');
             }
+            this.hideLoader();
         }
-        
-        // ===== Dashboard =====
-        async renderDashboard() {
-            const data = await API.getDashboard();
+
+        async renderDashboardView() {
+            const res = await fetch(`${CONFIG.API_URL}?path=dashboard&token=${this.token}`);
+            const data = await res.json();
             
-            return `
-                <div class="row">
-                    <div class="col-12"><h2><i class="fas fa-chart-pie text-primary"></i> لوحة التحكم</h2></div>
-                </div>
-                
+            const html = `
                 <div class="row g-4 mb-4">
-                    <div class="col-md-3">
-                        <div class="card stat-card" style="border-right: 4px solid var(--primary);">
-                            <div class="stat-icon text-primary"><i class="fas fa-project-diagram"></i></div>
-                            <div class="stat-number">${data.totalProjects || 0}</div>
-                            <div class="stat-label">إجمالي المشاريع</div>
-                            <small class="text-muted">${data.projectStatus?.active || 0} نشط</small>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card stat-card" style="border-right: 4px solid var(--success);">
-                            <div class="stat-icon text-success"><i class="fas fa-users"></i></div>
-                            <div class="stat-number">${data.totalUsers || 0}</div>
-                            <div class="stat-label">إجمالي المستخدمين</div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card stat-card" style="border-right: 4px solid var(--success);">
-                            <div class="stat-icon text-success"><i class="fas fa-money-bill-wave"></i></div>
-                            <div class="stat-number">${(data.totalIncome || 0).toLocaleString()} ر.س</div>
-                            <div class="stat-label">إجمالي الإيرادات</div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card stat-card" style="border-right: 4px solid var(--danger);">
-                            <div class="stat-icon text-danger"><i class="fas fa-hand-holding-usd"></i></div>
-                            <div class="stat-number">${(data.totalExpenses || 0).toLocaleString()} ر.س</div>
-                            <div class="stat-label">إجمالي المصروفات</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="row g-4 mb-4">
-                    <div class="col-md-8">
-                        <div class="card">
-                            <div class="card-header">الرسوم البيانية</div>
-                            <div class="card-body">
-                                <canvas id="chartMain" height="300"></canvas>
+                    <div class="col-md-4">
+                        <div class="card glass-card p-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div><h6 class="text-muted">إجمالي التدفقات المستلمة</h6><h2 class="fw-bold text-success">${Number(data.kpi.totalIncome).toLocaleString()} ر.س</h2></div>
+                                <div class="kpi-icon bg-success"><i class="fas fa-arrow-down-long"></i></div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-header">حالة المشاريع</div>
-                            <div class="card-body">
-                                <canvas id="chartStatus" height="300"></canvas>
+                        <div class="card glass-card p-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div><h6 class="text-muted">المستخلصات والمصروفات الهندسية</h6><h2 class="fw-bold text-danger">${Number(data.kpi.totalExpenses).toLocaleString()} ر.س</h2></div>
+                                <div class="kpi-icon bg-danger"><i class="fas fa-arrow-up-long"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card glass-card p-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div><h6 class="text-muted">صافي الربحية التشغيلية</h6><h2 class="fw-bold text-primary">${Number(data.kpi.netProfit).toLocaleString()} ر.س</h2></div>
+                                <div class="kpi-icon bg-primary"><i class="fas fa-scale-balanced"></i></div>
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header">الأنشطة الأخيرة</div>
-                            <div class="card-body">
-                                ${data.recentActivities && data.recentActivities.length ? 
-                                    data.recentActivities.map(a => `
-                                        <div class="activity-item">
-                                            <div class="activity-time">${new Date(a.timestamp).toLocaleDateString('ar')}</div>
-                                            <div class="activity-content">
-                                                <i class="fas fa-circle text-primary" style="font-size: 10px;"></i>
-                                                ${a.details || a.action}
-                                            </div>
-                                        </div>
-                                    `).join('') :
-                                    '<p class="text-muted">لا توجد أنشطة</p>'
-                                }
+                <div class="row g-4 mb-4">
+                    <div class="col-lg-8">
+                        <div class="card glass-card p-4">
+                            <h5>المنحنى المالي التراكمي للمشاريع (Chart.js)</h5>
+                            <canvas id="financialChart" style="max-height:350px;"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card glass-card p-4">
+                            <h5>حالة المشاريع الميدانية الحالية</h5>
+                            <canvas id="distributionChart" style="max-height:350px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            `;
+            $('#view-renderer').html(html);
+            
+            // Build Line Charts Analytics Engine
+            new Chart(document.getElementById('financialChart'), {
+                type: 'line',
+                data: {
+                    labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو'],
+                    datasets: [
+                        { label: 'الإيرادات والمستخلصات', data: [data.kpi.totalIncome * 0.4, data.kpi.totalIncome * 0.6, data.kpi.totalIncome * 0.8, data.kpi.totalIncome], borderColor: '#198754', tension: 0.3, fill: false },
+                        { label: 'المصروفات والمشتريات', data: [data.kpi.totalExpenses * 0.3, data.kpi.totalExpenses * 0.5, data.kpi.totalExpenses * 0.7, data.kpi.totalExpenses], borderColor: '#DC3545', tension: 0.3, fill: false }
+                    ]
+                },
+                options: { responsive: true, plugins: { legend: { labels: { font: { family: 'Segoe UI' } } } } }
+            });
+
+            new Chart(document.getElementById('distributionChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['نشط', 'مكتمل', 'معلق'],
+                    datasets: [{ data: [data.projectDistribution.active, data.projectDistribution.completed, data.projectDistribution.pending], backgroundColor: ['#0B5ED7', '#198754', '#FFC107'] }]
+                }
+            });
+        }
+
+        async renderProjectsView() {
+            const response = await fetch(`${CONFIG.API_URL}?path=projects&token=${this.token}`);
+            const projects = await response.json();
+            
+            let tableRows = '';
+            projects.forEach((prj, idx) => {
+                tableRows += `
+                    <tr>
+                        <td>${prj.Code}</td>
+                        <td><strong>${prj.Name}</strong></td>
+                        <td>${Number(prj.ContractValue).toLocaleString()} ر.س</td>
+                        <td>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: ${prj.Progress}%"></div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        initCharts() {
-            const ctx = document.getElementById('chartMain');
-            if (ctx) {
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو'],
-                        datasets: [
-                            {
-                                label: 'الإيرادات',
-                                data: [50000, 60000, 70000, 85000, 95000, 110000],
-                                borderColor: '#198754',
-                                backgroundColor: 'rgba(25,135,84,0.1)',
-                                fill: true,
-                                tension: 0.4
-                            },
-                            {
-                                label: 'المصروفات',
-                                data: [35000, 40000, 45000, 55000, 65000, 75000],
-                                borderColor: '#DC3545',
-                                backgroundColor: 'rgba(220,53,69,0.1)',
-                                fill: true,
-                                tension: 0.4
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'top',
-                                rtl: true,
-                                labels: { font: { size: 12 } }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    callback: (v) => v.toLocaleString() + ' ر.س'
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-            
-            const statusCtx = document.getElementById('chartStatus');
-            if (statusCtx) {
-                new Chart(statusCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['نشط', 'مكتمل', 'معلق'],
-                        datasets: [{
-                            data: [12, 8, 5],
-                            backgroundColor: ['#0B5ED7', '#198754', '#FFC107']
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                rtl: true,
-                                labels: { font: { size: 12 } }
-                            }
-                        }
-                    }
-                });
-            }
-        }
-        
-        // ===== Projects =====
-        async renderProjects() {
-            const projects = await API.getProjects();
-            
-            return `
+                            <small class="font-monospace">${prj.Progress}%</small>
+                        </td>
+                        <td><span class="badge ${prj.Status==='Active'?'bg-primary':'bg-secondary'}">${prj.Status}</span></td>
+                        <td>${prj.StartDate}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="app.triggerProgressModal('${prj.ID}', ${prj.Progress})"><i class="fas fa-edit"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            const html = `
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2><i class="fas fa-project-diagram text-primary"></i> المشاريع</h2>
-                    <button class="btn btn-primary" onclick="app.showAddProject()">
-                        <i class="fas fa-plus"></i> مشروع جديد
-                    </button>
+                    <h4>إدارة المشاريع الإنشائية والمستندات الهندسية</h4>
+                    <button class="btn btn-primary" id="openAddProjectModal"><i class="fas fa-plus me-2"></i>تأسيس كود مشروع هندسي</button>
                 </div>
-                
-                <div class="card">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>الاسم</th>
-                                        <th>العميل</th>
-                                        <th>القيمة</th>
-                                        <th>التقدم</th>
-                                        <th>الحالة</th>
-                                        <th>الإجراءات</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${projects.length ? projects.map((p, i) => `
-                                        <tr>
-                                            <td>${i+1}</td>
-                                            <td>${p.name}</td>
-                                            <td>${p.client || '-'}</td>
-                                            <td>${(p.contractValue || 0).toLocaleString()} ر.س</td>
-                                            <td>
-                                                <div class="progress-bar-custom" style="width:100px;">
-                                                    <div class="progress-fill" style="width:${p.progress || 0}%; background:${p.progress >= 80 ? 'var(--success)' : p.progress >= 50 ? 'var(--warning)' : 'var(--primary)'}"></div>
-                                                </div>
-                                                <small>${p.progress || 0}%</small>
-                                            </td>
-                                            <td>
-                                                <span class="badge-status ${p.status === 'Active' ? 'active' : p.status === 'Completed' ? 'inactive' : 'pending'}">
-                                                    ${p.status === 'Active' ? 'نشط' : p.status === 'Completed' ? 'مكتمل' : 'معلق'}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-sm btn-danger" onclick="app.deleteProject('${p.id}')">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    `).join('') : `
-                                        <tr><td colspan="7" class="text-center text-muted">لا توجد مشاريع</td></tr>
-                                    `}
-                                </tbody>
-                            </table>
-                        </div>
+                <div class="card glass-card p-4">
+                    <div class="table-responsive">
+                        <table class="table table-striped" id="projectsDataTable">
+                            <thead>
+                                <tr><th>كود المشروع</th><th>اسم المشروع الاستراتيجي</th><th>قيمة التعاقد</th><th>نسبة الإنجاز الميداني</th><th>الحالة العامة</th><th>تاريخ المباشرة</th><th>الإجراءات المتاحة</th></tr>
+                            </thead>
+                            <tbody>${tableRows}</tbody>
+                        </table>
                     </div>
                 </div>
             `;
+            $('#view-renderer').html(html);
+            $('#projectsDataTable').DataTable({ language: { search: "البحث السريع:", lengthMenu: "عرض _MENU_ سجلات" } });
+            
+            const self = this;
+            $('#openAddProjectModal').on('click', () => self.showAddProjectWizard());
         }
-        
-        showAddProject() {
+
+        showAddProjectWizard() {
+            const self = this;
             Swal.fire({
-                title: 'مشروع جديد',
+                title: 'تأسيس مشروع مقاولات جديد وضخ البيانات الأساسية',
                 html: `
-                    <div class="text-start">
-                        <div class="mb-3">
-                            <label class="form-label">اسم المشروع</label>
-                            <input type="text" class="form-control" id="projName" placeholder="اسم المشروع">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">العميل</label>
-                            <input type="text" class="form-control" id="projClient" placeholder="اسم العميل">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">قيمة العقد</label>
-                            <input type="number" class="form-control" id="projValue" placeholder="قيمة العقد">
-                        </div>
-                    </div>
+                    <input type="text" id="pName" class="form-control mb-3" placeholder="اسم المشروع الشامل">
+                    <input type="text" id="pCode" class="form-control mb-3" placeholder="رمز المشروع الرقمي الموحد (Code)">
+                    <input type="number" id="pVal" class="form-control mb-3" placeholder="قيمة العقد التعاقدية الكاملة">
+                    <input type="date" id="pStart" class="form-control mb-3" placeholder="تاريخ مباشرة الأعمال">
                 `,
                 showCancelButton: true,
-                confirmButtonText: 'حفظ',
-                cancelButtonText: 'إلغاء',
+                confirmButtonText: 'إدراج في قاعدة البيانات',
                 preConfirm: () => {
-                    const name = document.getElementById('projName').value;
-                    const client = document.getElementById('projClient').value;
-                    const contractValue = parseFloat(document.getElementById('projValue').value);
-                    
-                    if (!name) {
-                        Swal.showValidationMessage('يرجى إدخال اسم المشروع');
-                        return false;
-                    }
-                    return { name, client, contractValue };
-                }
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    try {
-                        const response = await API.createProject(result.value);
-                        if (response.success) {
-                            Swal.fire({ icon: 'success', title: 'تم الحفظ', text: 'تم إضافة المشروع بنجاح' });
-                            this.loadPage('projects');
-                        } else {
-                            Swal.fire({ icon: 'error', title: 'خطأ', text: response.message });
-                        }
-                    } catch (e) {
-                        Swal.fire({ icon: 'error', title: 'خطأ', text: e.message });
-                    }
-                }
-            });
-        }
-        
-        async deleteProject(id) {
-            const confirm = await Swal.fire({
-                title: 'تأكيد الحذف',
-                text: 'هل أنت متأكد من حذف هذا المشروع؟',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'حذف',
-                cancelButtonText: 'إلغاء'
-            });
-            
-            if (confirm.isConfirmed) {
-                try {
-                    const response = await API.deleteProject(id);
-                    if (response.success) {
-                        Swal.fire({ icon: 'success', title: 'تم الحذف' });
-                        this.loadPage('projects');
-                    } else {
-                        Swal.fire({ icon: 'error', title: 'خطأ', text: response.message });
-                    }
-                } catch (e) {
-                    Swal.fire({ icon: 'error', title: 'خطأ', text: e.message });
-                }
-            }
-        }
-        
-        // ===== Clients =====
-        async renderClients() {
-            const clients = await API.getClients();
-            return `
-                <h2><i class="fas fa-users text-primary"></i> العملاء</h2>
-                <div class="card mt-3">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>الاسم</th>
-                                        <th>الهاتف</th>
-                                        <th>البريد</th>
-                                        <th>الحالة</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${clients.length ? clients.map((c, i) => `
-                                        <tr>
-                                            <td>${i+1}</td>
-                                            <td>${c.name}</td>
-                                            <td>${c.phone || '-'}</td>
-                                            <td>${c.email || '-'}</td>
-                                            <td><span class="badge-status ${c.status === 'Active' ? 'active' : 'inactive'}">${c.status === 'Active' ? 'نشط' : 'غير نشط'}</span></td>
-                                        </tr>
-                                    `).join('') : `
-                                        <tr><td colspan="5" class="text-center text-muted">لا يوجد عملاء</td></tr>
-                                    `}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        // ===== Suppliers =====
-        async renderSuppliers() {
-            const suppliers = await API.getSuppliers();
-            return `
-                <h2><i class="fas fa-truck text-primary"></i> الموردين</h2>
-                <div class="card mt-3">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>الاسم</th>
-                                        <th>الهاتف</th>
-                                        <th>الرصيد</th>
-                                        <th>الحالة</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${suppliers.length ? suppliers.map((s, i) => `
-                                        <tr>
-                                            <td>${i+1}</td>
-                                            <td>${s.name}</td>
-                                            <td>${s.phone || '-'}</td>
-                                            <td>${(s.balance || 0).toLocaleString()} ر.س</td>
-                                            <td><span class="badge-status ${s.status === 'Active' ? 'active' : 'inactive'}">${s.status === 'Active' ? 'نشط' : 'غير نشط'}</span></td>
-                                        </tr>
-                                    `).join('') : `
-                                        <tr><td colspan="5" class="text-center text-muted">لا يوجد موردين</td></tr>
-                                    `}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        // ===== Materials =====
-        async renderMaterials() {
-            const materials = await API.getMaterials();
-            return `
-                <h2><i class="fas fa-boxes text-primary"></i> المواد</h2>
-                <div class="card mt-3">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>الاسم</th>
-                                        <th>الفئة</th>
-                                        <th>الوحدة</th>
-                                        <th>المخزون</th>
-                                        <th>التكلفة</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${materials.length ? materials.map((m, i) => `
-                                        <tr>
-                                            <td>${i+1}</td>
-                                            <td>${m.name}</td>
-                                            <td>${m.category || '-'}</td>
-                                            <td>${m.unit || '-'}</td>
-                                            <td>${m.stock || 0}</td>
-                                            <td>${(m.cost || 0).toLocaleString()} ر.س</td>
-                                        </tr>
-                                    `).join('') : `
-                                        <tr><td colspan="6" class="text-center text-muted">لا توجد مواد</td></tr>
-                                    `}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        // ===== Employees =====
-        async renderEmployees() {
-            const employees = await API.getEmployees();
-            return `
-                <h2><i class="fas fa-user-tie text-primary"></i> الموظفين</h2>
-                <div class="card mt-3">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>الاسم</th>
-                                        <th>المنصب</th>
-                                        <th>القسم</th>
-                                        <th>الراتب</th>
-                                        <th>الحالة</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${employees.length ? employees.map((e, i) => `
-                                        <tr>
-                                            <td>${i+1}</td>
-                                            <td>${e.name}</td>
-                                            <td>${e.position || '-'}</td>
-                                            <td>${e.department || '-'}</td>
-                                            <td>${(e.salary || 0).toLocaleString()} ر.س</td>
-                                            <td><span class="badge-status ${e.status === 'Active' ? 'active' : 'inactive'}">${e.status === 'Active' ? 'نشط' : 'غير نشط'}</span></td>
-                                        </tr>
-                                    `).join('') : `
-                                        <tr><td colspan="6" class="text-center text-muted">لا يوجد موظفين</td></tr>
-                                    `}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        // ===== Expenses =====
-        async renderExpenses() {
-            const expenses = await API.getExpenses();
-            return `
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2><i class="fas fa-hand-holding-usd text-danger"></i> المصروفات</h2>
-                    <button class="btn btn-danger" onclick="app.showAddExpense()">
-                        <i class="fas fa-plus"></i> مصروف جديد
-                    </button>
-                </div>
-                
-                <div class="card">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>الفئة</th>
-                                        <th>المبلغ</th>
-                                        <th>التاريخ</th>
-                                        <th>الوصف</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${expenses.length ? expenses.map((e, i) => `
-                                        <tr>
-                                            <td>${i+1}</td>
-                                            <td>${e.category || '-'}</td>
-                                            <td class="text-danger">${(e.amount || 0).toLocaleString()} ر.س</td>
-                                            <td>${e.date || '-'}</td>
-                                            <td>${e.description || '-'}</td>
-                                        </tr>
-                                    `).join('') : `
-                                        <tr><td colspan="5" class="text-center text-muted">لا توجد مصروفات</td></tr>
-                                    `}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        showAddExpense() {
-            Swal.fire({
-                title: 'مصروف جديد',
-                html: `
-                    <div class="text-start">
-                        <div class="mb-3">
-                            <label class="form-label">الفئة</label>
-                            <input type="text" class="form-control" id="expCategory" placeholder="الفئة" value="أخرى">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">المبلغ</label>
-                            <input type="number" class="form-control" id="expAmount" placeholder="المبلغ">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">الوصف</label>
-                            <input type="text" class="form-control" id="expDesc" placeholder="الوصف">
-                        </div>
-                    </div>
-                `,
-                showCancelButton: true,
-                confirmButtonText: 'حفظ',
-                cancelButtonText: 'إلغاء',
-                preConfirm: () => {
-                    const amount = parseFloat(document.getElementById('expAmount').value);
-                    if (!amount) {
-                        Swal.showValidationMessage('يرجى إدخال المبلغ');
-                        return false;
-                    }
                     return {
-                        category: document.getElementById('expCategory').value,
-                        amount: amount,
-                        description: document.getElementById('expDesc').value
-                    };
+                        Name: document.getElementById('pName').value,
+                        Code: document.getElementById('pCode').value,
+                        ContractValue: parseFloat(document.getElementById('pVal').value),
+                        StartDate: document.getElementById('pStart').value,
+                        Status: 'Active', Progress: 0
+                    }
                 }
             }).then(async (result) => {
-                if (result.isConfirmed) {
-                    try {
-                        const response = await API.createExpense(result.value);
-                        if (response.success) {
-                            Swal.fire({ icon: 'success', title: 'تم الحفظ' });
-                            this.loadPage('expenses');
-                        }
-                    } catch (e) {
-                        Swal.fire({ icon: 'error', title: 'خطأ', text: e.message });
-                    }
-                }
-            });
-        }
-        
-        // ===== Income =====
-        async renderIncome() {
-            const income = await API.getIncome();
-            return `
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2><i class="fas fa-money-bill-wave text-success"></i> الإيرادات</h2>
-                    <button class="btn btn-success" onclick="app.showAddIncome()">
-                        <i class="fas fa-plus"></i> إيراد جديد
-                    </button>
-                </div>
-                
-                <div class="card">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>الفئة</th>
-                                        <th>المبلغ</th>
-                                        <th>التاريخ</th>
-                                        <th>الوصف</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${income.length ? income.map((i, idx) => `
-                                        <tr>
-                                            <td>${idx+1}</td>
-                                            <td>${i.category || '-'}</td>
-                                            <td class="text-success">${(i.amount || 0).toLocaleString()} ر.س</td>
-                                            <td>${i.date || '-'}</td>
-                                            <td>${i.description || '-'}</td>
-                                        </tr>
-                                    `).join('') : `
-                                        <tr><td colspan="5" class="text-center text-muted">لا توجد إيرادات</td></tr>
-                                    `}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        showAddIncome() {
-            Swal.fire({
-                title: 'إيراد جديد',
-                html: `
-                    <div class="text-start">
-                        <div class="mb-3">
-                            <label class="form-label">الفئة</label>
-                            <input type="text" class="form-control" id="incCategory" placeholder="الفئة" value="أخرى">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">المبلغ</label>
-                            <input type="number" class="form-control" id="incAmount" placeholder="المبلغ">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">الوصف</label>
-                            <input type="text" class="form-control" id="incDesc" placeholder="الوصف">
-                        </div>
-                    </div>
-                `,
-                showCancelButton: true,
-                confirmButtonText: 'حفظ',
-                cancelButtonText: 'إلغاء',
-                preConfirm: () => {
-                    const amount = parseFloat(document.getElementById('incAmount').value);
-                    if (!amount) {
-                        Swal.showValidationMessage('يرجى إدخال المبلغ');
-                        return false;
-                    }
-                    return {
-                        category: document.getElementById('incCategory').value,
-                        amount: amount,
-                        description: document.getElementById('incDesc').value
-                    };
-                }
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    try {
-                        const response = await API.createIncome(result.value);
-                        if (response.success) {
-                            Swal.fire({ icon: 'success', title: 'تم الحفظ' });
-                            this.loadPage('income');
-                        }
-                    } catch (e) {
-                        Swal.fire({ icon: 'error', title: 'خطأ', text: e.message });
-                    }
-                }
-            });
-        }
-        
-        // ===== Refresh Data =====
-        async refreshData() {
-            if (this.currentPage === 'dashboard') {
-                try {
-                    await API.getDashboard();
-                } catch (e) {
-                    console.error('Refresh error:', e);
-                }
-            }
-        }
-        
-        // ===== Events =====
-        initEvents() {
-            document.getElementById('toggleSidebar').addEventListener('click', () => {
-                document.getElementById('sidebar').classList.toggle('open');
-            });
-            
-            document.getElementById('themeToggle').addEventListener('click', () => {
-                document.body.classList.toggle('dark-mode');
-                const icon = document.querySelector('#themeToggle i');
-                if (document.body.classList.contains('dark-mode')) {
-                    icon.className = 'fas fa-sun';
-                    localStorage.setItem('theme', 'dark');
-                } else {
-                    icon.className = 'fas fa-moon';
-                    localStorage.setItem('theme', 'light');
-                }
-            });
-            
-            document.getElementById('logoutBtn').addEventListener('click', async () => {
-                const confirm = await Swal.fire({
-                    title: 'تسجيل الخروج',
-                    text: 'هل أنت متأكد من تسجيل الخروج؟',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'نعم',
-                    cancelButtonText: 'إلغاء'
-                });
-                
-                if (confirm.isConfirmed) {
-                    try {
-                        await API.logout();
-                        localStorage.removeItem('erp_token');
-                        location.reload();
-                    } catch (e) {
-                        console.error('Logout error:', e);
-                    }
-                }
-            });
-            
-            document.getElementById('globalSearch').addEventListener('keyup', (e) => {
-                if (e.key === 'Enter') {
-                    const query = e.target.value;
-                    if (query) {
-                        Swal.fire({
-                            title: 'نتائج البحث',
-                            text: 'جاري البحث عن: ' + query,
-                            icon: 'info'
-                        });
-                    }
-                }
-            });
-            
-            if (localStorage.getItem('theme') === 'dark') {
-                document.body.classList.add('dark-mode');
-                document.querySelector('#themeToggle i').className = 'fas fa-sun';
-            }
-        }
-        
-        initTheme() {
-            if (localStorage.getItem('theme') === 'dark') {
-                document.body.classList.add('dark-mode');
-            }
-        }
-        
-        // ===== Login =====
-        showLogin() {
-            document.getElementById('sidebar').style.display = 'none';
-            document.getElementById('navbar').style.display = 'none';
-            document.getElementById('page-content').innerHTML = `
-                <div class="login-page">
-                    <div class="login-container">
-                        <div class="login-header">
-                            <h2><i class="fas fa-building"></i> نظام ERP</h2>
-                            <p>إدارة شركات المقاولات</p>
-                        </div>
-                        <form id="loginForm">
-                            <div class="mb-3">
-                                <label class="form-label">البريد الإلكتروني</label>
-                                <input type="email" class="form-control" id="loginEmail" value="admin@erp.com" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">كلمة المرور</label>
-                                <input type="password" class="form-control" id="loginPassword" value="Admin@123" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100" id="loginBtn">
-                                <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            `;
-            
-            document.getElementById('loginForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const email = document.getElementById('loginEmail').value;
-                const password = document.getElementById('loginPassword').value;
-                
-                const btn = document.getElementById('loginBtn');
-                btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> جاري التحميل...';
-                btn.disabled = true;
-                
-                try {
-                    const result = await API.login(email, password);
-                    if (result.success) {
-                        localStorage.setItem('erp_token', result.token);
-                        location.reload();
+                if(result.isConfirmed) {
+                    self.showLoader();
+                    const res = await fetch(CONFIG.API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'createProject', token: self.token, data: result.value, userId: self.user.id })
+                    });
+                    const rawRes = await res.json();
+                    if(rawRes.success) {
+                        Swal.fire('تم الإدراج', 'تم تأسيس كود المشروع الاستراتيجي بنجاح.', 'success');
+                        self.routeToModule('projects');
                     } else {
-                        Swal.fire({ icon: 'error', title: 'خطأ في المصادقة', text: result.message });
+                        self.hideLoader();
                     }
-                } catch (e) {
-                    Swal.fire({ icon: 'error', title: 'خطأ', text: 'فشل الاتصال بالخادم. تأكد من نشر الرابط وإعدادات الـ CORS.' });
-                } finally {
-                    btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> تسجيل الدخول';
-                    btn.disabled = false;
                 }
             });
+        }
+
+        triggerProgressModal(id, currentProgress) {
+            const self = this;
+            Swal.fire({
+                title: 'تعديل نسبة الإنجاز الميداني الفعلي من موقع العمل',
+                input: 'number',
+                inputValue: currentProgress,
+                showCancelButton: true,
+                confirmButtonText: 'تحديث النسبة',
+                inputValidator: (value) => {
+                    if (!value || value < 0 || value > 100) return 'يجب إدخال نسبة مئوية صحيحة بين 0 و100'
+                }
+            }).then(async (res) => {
+                if(res.isConfirmed) {
+                    self.showLoader();
+                    const postRes = await fetch(CONFIG.API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'updateProjectProgress', token: self.token, id: id, progress: parseInt(res.value), userId: self.user.id })
+                    });
+                    const backendResult = await postRes.json();
+                    if (backendResult.success) {
+                        Swal.fire('تم التعديل', 'تم تحديث سجل نسبة الإنجاز والتدقيق التشغيلي.', 'success');
+                        self.routeToModule('projects');
+                    } else {
+                        self.hideLoader();
+                    }
+                }
+            });
+        }
+
+        async renderPurchaseRequestsView() {
+            const response = await fetch(`${CONFIG.API_URL}?path=purchase_requests&token=${this.token}`);
+            const requests = await response.json();
+            let tableRows = '';
+            
+            requests.forEach(req => {
+                tableRows += `
+                    <tr>
+                        <td>${req.ID.substring(0,8)}</td>
+                        <td>${req.EstimatedCost} ر.س</td>
+                        <td><span class="badge bg-info">${req.ApprovalStage}</span></td>
+                        <td><span class="badge ${req.Status==='Approved'?'bg-success':'bg-warning'}">${req.Status}</span></td>
+                        <td>
+                            ${req.Status === 'Pending' ? `<button class="btn btn-sm btn-success" onclick="app.executeApprovalWorkflowAction('${req.ID}', '${req.ApprovalStage}', 'Approved')"><i class="fas fa-check"></i> اعتماد</button>` : ''}
+                        </td>
+                    </tr>
+                `;
+            });
+
+            const html = `
+                <h4>سير اعتمادات طلبات الشراء والمواد اللوجستية المتتابع</h4>
+                <div class="card glass-card p-4">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="prTable">
+                            <thead><tr><th>رقم الطلب</th><th>التكلفة التقديرية</th><th>المرحلة الرقابية الحالية</th><th>حالة الطلب العامة</th><th>صلاحيات المراجعة والتدقيق</th></tr></thead>
+                            <tbody>${tableRows}</tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            $('#view-renderer').html(html);
+            $('#prTable').DataTable();
+        }
+
+        async executeApprovalWorkflowAction(id, currentStage, actionStatus) {
+            this.showLoader();
+            const res = await fetch(CONFIG.API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'approvePurchaseRequest', token: this.token, id: id, stage: currentStage, status: actionStatus, userId: this.user.id })
+            });
+            const data = await res.json();
+            if(data.success) {
+                Swal.fire('مرحلة الرقابة', `تم معالجة الطلب ونقله إلى المرحلة التالية بنجاح: ${data.currentStage}`, 'success');
+                this.routeToModule('purchase_requests');
+            } else {
+                this.hideLoader();
+            }
+        }
+
+        async renderGenericTableView(title, path) {
+            const response = await fetch(`${CONFIG.API_URL}?path=${path}&token=${this.token}`);
+            const data = await response.json();
+            
+            let tableHeaders = '<tr>';
+            let tableBody = '';
+            
+            if (data.length > 0) {
+                const keys = Object.keys(data[0]);
+                keys.forEach(k => tableHeaders += `<th>${k}</th>`);
+                tableHeaders += '</tr>';
+                
+                data.forEach(row => {
+                    tableBody += '<tr>';
+                    keys.forEach(k => {
+                        tableBody += `<td>${typeof row[k] === 'object' ? JSON.stringify(row[k]) : row[k]}</td>`;
+                    });
+                    tableBody += '</tr>';
+                });
+            } else {
+                tableHeaders += '<th>السجلات</th></tr>';
+                tableBody = '<tr><td class="text-center text-muted">لا توجد بيانات متاحة حالياً في هذا الموديل.</td></tr>';
+            }
+
+            const html = `
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>${title}</h4>
+                    <div class="gap-2 d-flex">
+                        <button class="btn btn-outline-success" onclick="app.exportToExcelEngine('${path}')"><i class="fas fa-file-excel me-2"></i>تصدير السجل الكامل Excel</button>
+                        <button class="btn btn-outline-danger" onclick="window.print()"><i class="fas fa-print me-2"></i>طباعة المستند القياسي</button>
+                    </div>
+                </div>
+                <div class="card glass-card p-4">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped" id="genericTable">${tableHeaders}<tbody>${tableBody}</tbody></table>
+                    </div>
+                </div>
+            `;
+            $('#view-renderer').html(html);
+            if (data.length > 0) $('#genericTable').DataTable();
+        }
+
+        async renderLogsView() {
+            const response = await fetch(`${CONFIG.API_URL}?path=logs&token=${this.token}`);
+            const logs = await response.json();
+            let tableRows = '';
+            logs.forEach(l => {
+                tableRows += `<tr><td>${l.Timestamp}</td><td>${l.UserId}</td><td><span class="badge bg-secondary">${l.Action}</span></td><td>${l.Module}</td><td><code class="text-dark">${l.Details}</code></td><td>${l.IP}</td></tr>`;
+            });
+            const html = `
+                <h4>سجل الأمن والتدقيق العام للعمليات والرقابة المشددة (Audit Logs)</h4>
+                <div class="card glass-card p-4">
+                    <table class="table table-striped font-monospace" id="logsTable">
+                        <thead><tr><th>التوقيت الزمني</th><th>المستخدم الرقمي</th><th>العملية المنفذة</th><th>الوحدة والموديل</th><th>تفاصيل حزمة البيانات السحابية</th><th>عنوان الـ IP الموثق</th></tr></thead>
+                        <tbody>${tableRows}</tbody>
+                    </table>
+                </div>
+            `;
+            $('#view-renderer').html(html);
+            $('#logsTable').DataTable();
+        }
+
+        exportToExcelEngine(filename) {
+            const elt = document.getElementById('genericTable');
+            const wb = XLSX.utils.table_to_book(elt, { sheet: "ERP Enterprise Data" });
+            XLSX.writeFile(wb, `${filename}_Production_Extract_${new Date().toISOString().split('T')[0]}.xlsx`);
         }
     }
-    
-    // ========================================
-    // 4. تشغيل التطبيق
-    // ========================================
-    
-    let app;
-    document.addEventListener('DOMContentLoaded', () => {
-        app = new App();
-        window.app = app;
+
+    $(document).ready(() => {
+        window.app = new EnterpriseERPApplication();
     });
 </script>
 
