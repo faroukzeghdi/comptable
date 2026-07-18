@@ -13,7 +13,7 @@
       --shadow:0 10px 30px rgba(16,24,40,.08);--radius:16px
     }
     *{box-sizing:border-box} body{margin:0;font-family:Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink)}
-    button,input,select,textarea{font:inherit} button{cursor:pointer}
+    button,input,select,textarea{font:inherit} button{cursor:pointer} button:disabled{cursor:not-allowed;opacity:.65}
     .hidden{display:none!important}.app{min-height:100vh}.login-wrap{min-height:100vh;display:grid;place-items:center;padding:24px;background:
       radial-gradient(circle at 15% 10%,#93c5fd66,transparent 34%),linear-gradient(145deg,#f8fafc,#eaf2ff)}
     .login-card{width:min(440px,100%);background:#fff;border:1px solid #ffffffaa;border-radius:24px;padding:32px;box-shadow:var(--shadow)}
@@ -72,7 +72,7 @@
       <input id="loginPassword" type="password" autocomplete="current-password" required placeholder="••••••••">
       <button class="btn btn-primary" type="submit">تسجيل الدخول</button>
       <div id="loginError" class="error hidden"></div>
-      <div id="connectionInfo" class="muted" style="font-size:12px;margin-top:12px">الإصدار 1.3.0 — جارٍ التحقق من الخادم…</div>
+      <div id="connectionInfo" class="muted" style="font-size:12px;margin-top:12px">الإصدار 1.3.2 — جارٍ التحقق من الخادم…</div>
     </form>
   </div>
 </section>
@@ -106,7 +106,7 @@
 <script>
 const CONFIG = {
   // ألصق هنا رابط نشر Google Apps Script الذي ينتهي بـ /exec
-  GAS_WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbwOQiHjkS9HznahFOYU4vyrNykTHMkcbOMuH_y4BuWac3MI9ph63sZgJhrzpbN2WIPhGA/exec',
+  GAS_WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbxjI1eaEv3DMNdM9TXuyumMpC4ejwKeLtVxYv_DMzp8u_WiOHdzRrD1EOROXVAUYVrI/exec',
   REQUEST_TIMEOUT_MS: 60000
 };
 
@@ -145,7 +145,18 @@ window.addEventListener('message', event => {
 const STATE = {
   token: localStorage.getItem('zf_erp_token') || '',
   branchId: localStorage.getItem('zf_erp_branch') || '',
-  boot: null, entity: null, view:'dashboard', rows: [], currentRecord: null, searchTimer: null, annual: null
+  boot: null,
+  entity: null,
+  view:'dashboard',
+  rows: [],
+  allRows: [],
+  headers: [],
+  entityCache: Object.create(null),
+  currentRecord: null,
+  searchTimer: null,
+  annual: null,
+  loadSequence: 0,
+  saving: false
 };
 
 const ENTITY_META = {
@@ -354,15 +365,18 @@ function setupBranchFilter(){
 async function changeBranchFilter(value){
   STATE.branchId=value||'';
   localStorage.setItem('zf_erp_branch',STATE.branchId);
+  // تغيير الفرع فقط هو الذي يطلب بيانات جديدة؛ لا يوجد تحديث تلقائي دوري.
   if(STATE.view==='annualReports') await showAnnualReports();
-  else if(STATE.entity) await loadEntity();
+  else if(STATE.entity) await loadEntity({force:false});
   else await refreshDashboard();
 }
 
 function buildNav(){
   const nav=document.getElementById('nav');
+  const canViewZakat=STATE.boot?.user?.Role==='GENERAL_MANAGER';
+  const annualLabel=canViewZakat?'التقارير السنوية والزكاة':'التقارير السنوية';
   const groups=[
-    ['الرئيسية',[['dashboard','لوحة القيادة','📊'],['annualReports','التقارير السنوية والزكاة','📅']]],
+    ['الرئيسية',[['dashboard','لوحة القيادة','📊'],['annualReports',annualLabel,'📅']]],
     ['العمليات',['PROJECTS','BRANCHES','PURCHASE_REQUESTS','PURCHASE_ORDERS','WAREHOUSES','MATERIALS','STOCK_MOVEMENTS']],
     ['المالية',['SUPPLIERS','CLIENTS','BANKS','BANK_TRANSACTIONS','CASH_TRANSACTIONS','INVOICES','PAYMENTS','JOURNAL']],
     ['الموارد',['WORKERS','EQUIPMENT','USERS','NOTIFICATIONS']]
@@ -390,6 +404,7 @@ function showDashboard(data){
   if(data) STATE.boot.dashboard=data;
   const d=STATE.boot.dashboard,c=d.cards,cur=STATE.boot.settings.currency;
   title('لوحة القيادة','نظرة شاملة على نشاط الشركة');
+  const canViewZakat=STATE.boot?.user?.Role==='GENERAL_MANAGER' && d.canViewZakat===true;
   const metrics=[
     ['💰','رصيد جميع البنوك',money(c.bankTotal,cur)],
     ['📦','ديون الموردين',money(c.supplierDebt,cur)],
@@ -401,9 +416,9 @@ function showDashboard(data){
     ['🧱','مواد تحت الحد',c.lowStock],
     ['🔧','صيانة قريبة',c.dueMaintenance],
     ['📅','الربح السنوي '+esc(d.year||''),money(c.annualProfit,cur)],
-    ['🕌','تقدير الزكاة',money(c.zakatEstimate,cur)],
     ['🧾','صافي TVA السنوي',money(c.annualTvaNet,cur)]
   ];
+  if(canViewZakat) metrics.splice(10,0,['🕌','تقدير الزكاة '+num(c.zakatRate||2.5)+'%',money(c.zakatEstimate,cur)]);
   const cards=metrics.map(x=>`<div class="card metric"><div><div class="title">${x[1]}</div><div class="value">${x[2]}</div></div><div class="metric-icon">${x[0]}</div></div>`).join('');
   const projects=(d.projects||[]).slice(0,8).map(p=>`<div class="project-row">
     <div class="row-between"><strong>${esc(p.Name||p.ProjectNo)}</strong><span class="badge ${statusClass(p.Status)}">${statusText(p.Status)}</span></div>
@@ -422,7 +437,7 @@ function showDashboard(data){
       <section class="panel"><div class="panel-head"><h3>خريطة الورشات</h3></div>${renderMap(d.projects||[])}</section>
       <section class="panel"><div class="panel-head"><h3>ملخص سريع</h3></div>
         <p class="muted">اضغط على أي وحدة من القائمة الجانبية لإدارة البيانات، أو استخدم أزرار PDF وExcel لاستخراج التقارير.</p>
-        <div class="actions"><button class="btn btn-primary" onclick="openEntity('PURCHASE_REQUESTS')">إنشاء طلب شراء</button><button class="btn" onclick="showAnnualReports()">التفاصيل السنوية والزكاة</button></div>
+        <div class="actions"><button class="btn btn-primary" onclick="openEntity('PURCHASE_REQUESTS')">إنشاء طلب شراء</button><button class="btn" onclick="showAnnualReports()">${canViewZakat?'التفاصيل السنوية والزكاة':'التفاصيل السنوية'}</button></div>
       </section>
     </div>`;
 }
@@ -444,9 +459,10 @@ async function refreshDashboard(){
 async function showAnnualReports(){
   STATE.entity=null;STATE.view='annualReports';setActiveNav('annualReports');
   const currentYear=String(STATE.annual?.year||new Date().getFullYear());
-  title('التقارير السنوية والزكاة','تفاصيل الأرباح والضرائب حسب السنة والفرع');
+  const canViewZakat=STATE.boot?.user?.Role==='GENERAL_MANAGER';
+  title(canViewZakat?'التقارير السنوية والزكاة':'التقارير السنوية','تفاصيل الأرباح والضرائب حسب السنة والفرع');
   document.getElementById('content').innerHTML=`
-    <div class="page-head"><div><h2>📅 التقرير السنوي</h2><p class="muted">المبيعات، المشتريات، الأرباح، TVA وتقدير الزكاة.</p></div>
+    <div class="page-head"><div><h2>📅 التقرير السنوي</h2><p class="muted">${canViewZakat?'المبيعات، المشتريات، الأرباح، TVA وتقدير الزكاة.':'المبيعات، المشتريات، الأرباح وTVA.'}</p></div>
       <div class="actions"><input id="annualYear" type="number" min="2000" max="2100" value="${escAttr(currentYear)}" style="width:120px"><button class="btn btn-primary" onclick="loadAnnualReport()">عرض</button><button class="btn" onclick="printAnnualReport()">طباعة</button></div></div>
     <div id="annualArea"><div class="empty">جاري تحميل التقرير...</div></div>`;
   await loadAnnualReport();
@@ -463,12 +479,15 @@ async function loadAnnualReport(){
   const monthNames=['جانفي','فيفري','مارس','أفريل','ماي','جوان','جويلية','أوت','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
   const monthRows=(r.months||[]).map((m,i)=>`<tr><td>${monthNames[i]}</td><td>${money(m.sales,cur)}</td><td>${money(m.purchases,cur)}</td><td>${money(m.profit,cur)}</td><td>${money(m.tvaCollected,cur)}</td><td>${money(m.tvaPaid,cur)}</td><td>${num(m.invoiceCount)}</td></tr>`).join('');
   const branchRows=(r.branches||[]).map(b=>`<tr><td>${esc(b.branchName)}</td><td>${money(b.sales,cur)}</td><td>${money(b.purchases,cur)}</td><td>${money(b.profit,cur)}</td><td>${num(b.invoiceCount)}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">لا توجد بيانات فروع لهذه السنة.</td></tr>';
+  const canViewZakat=STATE.boot?.user?.Role==='GENERAL_MANAGER' && r.canViewZakat===true;
+  const zakatCard=canViewZakat?`<div class="card metric"><div><div class="title">تقدير الزكاة ${num(s.zakatRate||2.5)}%</div><div class="value">${money(s.zakatEstimate,cur)}</div></div><div class="metric-icon">🕌</div></div>`:'';
+  const zakatNote=canViewZakat?`<div class="annual-note">تقدير الزكاة إرشادي ومحسوب بنسبة ${num(s.zakatRate||2.5)}% من الربح السنوي الموجب المسجل في الفواتير. الوعاء الشرعي النهائي قد يختلف حسب السيولة والمخزون والديون والمستحقات.</div>`:'';
   document.getElementById('annualArea').innerHTML=`
     <div class="cards">
       <div class="card metric"><div><div class="title">إجمالي المبيعات</div><div class="value">${money(s.sales,cur)}</div></div><div class="metric-icon">📈</div></div>
       <div class="card metric"><div><div class="title">إجمالي المشتريات/الخدمات</div><div class="value">${money(s.purchases,cur)}</div></div><div class="metric-icon">📉</div></div>
       <div class="card metric"><div><div class="title">الربح السنوي</div><div class="value">${money(s.profit,cur)}</div></div><div class="metric-icon">💰</div></div>
-      <div class="card metric"><div><div class="title">تقدير الزكاة ${num(s.zakatRate)}%</div><div class="value">${money(s.zakatEstimate,cur)}</div></div><div class="metric-icon">🕌</div></div>
+      ${zakatCard}
       <div class="card metric"><div><div class="title">TVA محصلة</div><div class="value">${money(s.tvaCollected,cur)}</div></div><div class="metric-icon">🧾</div></div>
       <div class="card metric"><div><div class="title">TVA مدفوعة</div><div class="value">${money(s.tvaPaid,cur)}</div></div><div class="metric-icon">📄</div></div>
       <div class="card metric"><div><div class="title">صافي TVA</div><div class="value">${money(s.tvaNet,cur)}</div></div><div class="metric-icon">⚖️</div></div>
@@ -478,7 +497,7 @@ async function loadAnnualReport(){
       <section class="panel"><div class="panel-head"><h3>التفاصيل الشهرية — ${esc(r.year)}</h3></div><div class="table-wrap"><table class="data-table"><thead><tr><th>الشهر</th><th>المبيعات</th><th>المشتريات</th><th>الربح</th><th>TVA محصلة</th><th>TVA مدفوعة</th><th>الفواتير</th></tr></thead><tbody>${monthRows}</tbody></table></div></section>
       <section class="panel"><div class="panel-head"><h3>التفاصيل حسب الفرع</h3></div><div class="table-wrap"><table class="data-table"><thead><tr><th>الفرع</th><th>المبيعات</th><th>المشتريات</th><th>الربح</th><th>الفواتير</th></tr></thead><tbody>${branchRows}</tbody></table></div></section>
     </div>
-    <div class="annual-note">تقدير الزكاة إرشادي ومحسوب بنسبة ${num(s.zakatRate)}% من الربح السنوي الموجب المسجل في الفواتير. الوعاء الشرعي النهائي قد يختلف حسب السيولة والمخزون والديون والمستحقات.</div>`;
+    ${zakatNote}`;
 }
 
 async function openEntity(entity){
@@ -490,22 +509,53 @@ async function openEntity(entity){
       <div class="actions">${ENTITY_FIELDS[entity]?`<button class="btn btn-primary" onclick="openForm('${entity}')">+ إضافة</button>`:''}</div></div>
     <section class="panel">
       <div class="toolbar">
-        <div class="search"><span>⌕</span><input id="entitySearch" placeholder="بحث..." oninput="debouncedLoad()"></div>
-        <div class="actions"><button class="btn btn-sm" onclick="printCurrentReport()">طباعة</button><button class="btn btn-sm" onclick="exportEntity('pdf')">PDF</button><button class="btn btn-sm" onclick="exportEntity('xlsx')">Excel</button><button class="btn btn-sm" onclick="loadEntity()">تحديث ↻</button></div>
+        <div class="search"><span>⌕</span><input id="entitySearch" placeholder="بحث سريع داخل البيانات المحمّلة..." oninput="debouncedLoad()"></div>
+        <div class="actions"><button class="btn btn-sm" onclick="printCurrentReport()">طباعة</button><button class="btn btn-sm" onclick="exportEntity('pdf')">PDF</button><button class="btn btn-sm" onclick="exportEntity('xlsx')">Excel</button><button class="btn btn-sm" onclick="loadEntity({force:true})">تحديث يدوي ↻</button></div>
       </div>
       <div id="tableArea"><div class="empty">جاري التحميل...</div></div>
     </section>`;
-  await loadEntity();
+  await loadEntity({force:false});
 }
 
-async function loadEntity(){
-  if(!STATE.entity)return;
-  const search=document.getElementById('entitySearch')?.value||'';
-  setLoading(true);
-  const r=await server('list',{token:STATE.token,entity:STATE.entity,search,pageSize:200,branchId:STATE.branchId});
-  setLoading(false);
+function entityCacheKey(entity=STATE.entity){
+  return String(entity||'')+'::'+String(STATE.branchId||'ALL');
+}
+
+function applyEntitySearch(){
+  const q=(document.getElementById('entitySearch')?.value||'').trim().toLowerCase();
+  STATE.rows=q
+    ? STATE.allRows.filter(r=>Object.values(r).some(v=>display(v,'',r).toLowerCase().includes(q)))
+    : STATE.allRows.slice();
+  renderTable(STATE.headers,STATE.rows);
+}
+
+async function loadEntity(options={}){
+  const entity=STATE.entity;
+  if(!entity)return;
+  const force=options.force===true;
+  const key=entityCacheKey(entity);
+  const cached=STATE.entityCache[key];
+
+  if(cached&&!force){
+    STATE.headers=cached.headers.slice();
+    STATE.allRows=cached.rows.map(r=>Object.assign({},r));
+    applyEntitySearch();
+    return;
+  }
+
+  const sequence=++STATE.loadSequence;
+  const area=document.getElementById('tableArea');
+  if(area&&!cached)area.innerHTML='<div class="empty">جاري تحميل البيانات...</div>';
+  const r=await server('list',{token:STATE.token,entity,search:'',pageSize:500,branchId:STATE.branchId});
+
+  // تجاهل أي استجابة قديمة إذا انتقل المستخدم إلى صفحة أخرى أثناء التحميل.
+  if(sequence!==STATE.loadSequence||STATE.entity!==entity)return;
   if(!r.ok){toast(r.message,true);return}
-  STATE.rows=r.rows;renderTable(r.headers,r.rows);
+
+  STATE.headers=(r.headers||[]).slice();
+  STATE.allRows=(r.rows||[]).map(row=>Object.assign({},row));
+  STATE.entityCache[key]={headers:STATE.headers.slice(),rows:STATE.allRows.map(row=>Object.assign({},row)),total:r.total||STATE.allRows.length};
+  applyEntitySearch();
 }
 
 function renderTable(headers,rows){
@@ -513,7 +563,7 @@ function renderTable(headers,rows){
   const useful=(ENTITY_FIELDS[entity]||headers).filter(h=>!['PasswordHash','ItemsJSON'].includes(h)).slice(0,10);
   const head=useful.map(h=>`<th>${fieldLabel(h)}</th>`).join('');
   const body=rows.map(r=>`<tr onclick="openForm('${entity}','${escAttr(r.ID)}')">
-    ${useful.map(h=>`<td title="${escAttr(display(r[h],h))}">${renderCell(r[h],h)}</td>`).join('')}
+    ${useful.map(h=>`<td title="${escAttr(display(r[h],h,r))}">${renderCell(r[h],h,r)}</td>`).join('')}
     <td onclick="event.stopPropagation()">${rowActions(entity,r)}</td></tr>`).join('');
   document.getElementById('tableArea').innerHTML=rows.length?`<div class="table-wrap"><table class="data-table"><thead><tr>${head}<th>إجراءات</th></tr></thead><tbody>${body}</tbody></table></div>`:'<div class="empty">لا توجد بيانات.</div>';
 }
@@ -532,7 +582,10 @@ function rowActions(entity,r){
 }
 
 function openForm(entity,id){
-  const record=Object.assign({},id?STATE.rows.find(x=>x.ID===id)||{}:{});
+  const sourceRows=STATE.allRows.length?STATE.allRows:STATE.rows;
+  const record=Object.assign({},id?sourceRows.find(x=>x.ID===id)||{}:{});
+  // عند وجود فلتر فرع، نجعل الإضافة الجديدة تابعة له افتراضيًا حتى تظهر فورًا في نفس القائمة.
+  if(!id&&STATE.branchId&&(ENTITY_FIELDS[entity]||[]).includes('BranchID'))record.BranchID=STATE.branchId;
   if(!id&&entity==='INVOICES'){record.Date=localToday();record.TaxRate=String(STATE.boot.settings.tvaRate??19);record.InvoiceKind='NORMAL';record.Type='SALE';record.PartyType='CLIENT';record.Status='UNPAID';}
   STATE.currentRecord=record;
   const fields=ENTITY_FIELDS[entity]||[];
@@ -621,27 +674,64 @@ function recalculateInvoiceForm(){
 }
 
 async function saveForm(e,entity,id){
-  e.preventDefault();syncItems();
-  const fd=new FormData(e.target),data={};
+  e.preventDefault();
+  if(STATE.saving)return;
+  syncItems();
+  const form=e.target,submit=form.querySelector('button[type="submit"]');
+  const data={};
   (ENTITY_FIELDS[entity]||[]).forEach(f=>{
-    const el=e.target.elements[f];if(!el)return;
+    const el=form.elements[f];if(!el)return;
     data[f]=el.type==='checkbox'?el.checked:el.value;
   });
   if(id)data.ID=id;
-  setLoading(true);const r=await server('save',{token:STATE.token,entity,data});setLoading(false);
-  if(!r.ok){toast(r.message,true);return}
-  toast(r.message);closeModal();await refreshLookups();await loadEntity();
+
+  STATE.saving=true;
+  if(submit){submit.disabled=true;submit.dataset.oldText=submit.textContent;submit.textContent='جارٍ الحفظ...';}
+  try{
+    const r=await server('save',{token:STATE.token,entity,data});
+    if(!r.ok){toast(r.message,true);return}
+
+    const saved=Object.assign({},data,r.record||{});
+    STATE.loadSequence++; // يمنع طلب قائمة قديم من إخفاء السجل الذي حُفظ للتو.
+    upsertLocalRecord(entity,saved);
+    upsertLookupRecord(entity,saved);
+    if(entity==='BRANCHES')setupBranchFilter();
+
+    // الإضافة تظهر مباشرة في أول الجدول، من دون bootstrap أو إعادة تحميل تلقائي من الخادم.
+    if(!id){
+      const search=document.getElementById('entitySearch');
+      if(search)search.value='';
+    }
+    if(STATE.entity===entity)applyEntitySearch();
+    closeModal();
+    toast(r.message||'تم الحفظ.');
+  }finally{
+    STATE.saving=false;
+    if(submit&&submit.isConnected){submit.disabled=false;submit.textContent=submit.dataset.oldText||'حفظ';}
+  }
 }
 
 async function removeRecord(entity,id){
   if(!confirm('تأكيد حذف السجل؟'))return;
-  setLoading(true);const r=await server('remove',{token:STATE.token,entity,id});setLoading(false);
-  if(!r.ok){toast(r.message,true);return}toast(r.message);closeModal();await loadEntity();
+  const r=await server('remove',{token:STATE.token,entity,id});
+  if(!r.ok){toast(r.message,true);return}
+  STATE.loadSequence++;
+  removeLocalRecord(entity,id);
+  if(entity==='BRANCHES')setupBranchFilter();
+  closeModal();
+  if(STATE.entity===entity)applyEntitySearch();
+  toast(r.message||'تم حذف السجل.');
 }
 
 async function approvePurchase(id){
-  setLoading(true);const r=await server('approvePurchase',{token:STATE.token,id});setLoading(false);
-  toast(r.message,!r.ok);if(r.ok)await loadEntity();
+  const r=await server('approvePurchase',{token:STATE.token,id});
+  toast(r.message,!r.ok);
+  if(r.ok&&r.record){
+    STATE.loadSequence++;
+    upsertLocalRecord('PURCHASE_REQUESTS',r.record);
+    upsertLookupRecord('PURCHASE_REQUESTS',r.record);
+    if(STATE.entity==='PURCHASE_REQUESTS')applyEntitySearch();
+  }
 }
 
 async function uploadAttachment(entity,recordId){
@@ -672,7 +762,7 @@ function printCurrentReport(){
   if(!STATE.entity||!STATE.rows.length){toast('لا توجد بيانات للطباعة.',true);return}
   const entity=STATE.entity,m=ENTITY_META[entity]||{label:entity};
   const headers=(ENTITY_FIELDS[entity]||Object.keys(STATE.rows[0])).filter(h=>!['PasswordHash','ItemsJSON'].includes(h)).slice(0,12);
-  const table=`<div class="report-date">عدد السجلات: ${STATE.rows.length}</div><table><thead><tr>${headers.map(h=>`<th>${esc(fieldLabel(h))}</th>`).join('')}</tr></thead><tbody>${STATE.rows.map(r=>`<tr>${headers.map(h=>`<td>${esc(display(r[h],h))}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  const table=`<div class="report-date">عدد السجلات: ${STATE.rows.length}</div><table><thead><tr>${headers.map(h=>`<th>${esc(fieldLabel(h))}</th>`).join('')}</tr></thead><tbody>${STATE.rows.map(r=>`<tr>${headers.map(h=>`<td>${esc(display(r[h],h,r))}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
   openPrintWindow(buildClientPrintShell('تقرير '+m.label,table),'تقرير '+m.label);
 }
 
@@ -680,10 +770,13 @@ function printAnnualReport(){
   if(!STATE.annual){toast('حمّل التقرير السنوي أولًا.',true);return}
   const r=STATE.annual,s=r.summary,cur=STATE.boot.settings.currency;
   const monthNames=['جانفي','فيفري','مارس','أفريل','ماي','جوان','جويلية','أوت','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
-  const summary=`<div class="print-cards"><div><b>المبيعات</b><span>${money(s.sales,cur)}</span></div><div><b>المشتريات</b><span>${money(s.purchases,cur)}</span></div><div><b>الربح</b><span>${money(s.profit,cur)}</span></div><div><b>تقدير الزكاة</b><span>${money(s.zakatEstimate,cur)}</span></div></div>`;
+  const canViewZakat=STATE.boot?.user?.Role==='GENERAL_MANAGER' && r.canViewZakat===true;
+  const zakatPrint=canViewZakat?`<div><b>تقدير الزكاة ${num(s.zakatRate||2.5)}%</b><span>${money(s.zakatEstimate,cur)}</span></div>`:'';
+  const summary=`<div class="print-cards"><div><b>المبيعات</b><span>${money(s.sales,cur)}</span></div><div><b>المشتريات</b><span>${money(s.purchases,cur)}</span></div><div><b>الربح</b><span>${money(s.profit,cur)}</span></div>${zakatPrint}</div>`;
   const months=`<h3>التفاصيل الشهرية</h3><table><thead><tr><th>الشهر</th><th>المبيعات</th><th>المشتريات</th><th>الربح</th><th>TVA محصلة</th><th>TVA مدفوعة</th></tr></thead><tbody>${r.months.map((m,i)=>`<tr><td>${monthNames[i]}</td><td>${money(m.sales,cur)}</td><td>${money(m.purchases,cur)}</td><td>${money(m.profit,cur)}</td><td>${money(m.tvaCollected,cur)}</td><td>${money(m.tvaPaid,cur)}</td></tr>`).join('')}</tbody></table>`;
   const branches=`<h3>حسب الفرع</h3><table><thead><tr><th>الفرع</th><th>المبيعات</th><th>المشتريات</th><th>الربح</th></tr></thead><tbody>${(r.branches||[]).map(b=>`<tr><td>${esc(b.branchName)}</td><td>${money(b.sales,cur)}</td><td>${money(b.purchases,cur)}</td><td>${money(b.profit,cur)}</td></tr>`).join('')}</tbody></table>`;
-  openPrintWindow(buildClientPrintShell('التقرير السنوي '+r.year,summary+months+branches+`<p class="note">تقدير الزكاة إرشادي بنسبة ${num(s.zakatRate)}% من الربح الموجب.</p>`),'التقرير السنوي '+r.year);
+  const zakatNote=canViewZakat?`<p class="note">تقدير الزكاة إرشادي بنسبة ${num(s.zakatRate||2.5)}% من الربح الموجب.</p>`:'';
+  openPrintWindow(buildClientPrintShell('التقرير السنوي '+r.year,summary+months+branches+zakatNote),'التقرير السنوي '+r.year);
 }
 
 function buildClientPrintShell(title,body){
@@ -714,7 +807,7 @@ async function showStatement(partyType,partyId){
 
 function simpleTable(rows,headers){
   if(!rows.length)return'<div class="empty">لا توجد بيانات.</div>';
-  return `<div class="table-wrap"><table class="data-table"><thead><tr>${headers.map(h=>`<th>${fieldLabel(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${headers.map(h=>`<td>${renderCell(r[h],h)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  return `<div class="table-wrap"><table class="data-table"><thead><tr>${headers.map(h=>`<th>${fieldLabel(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${headers.map(h=>`<td>${renderCell(r[h],h,r)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
 }
 
 function openPasswordModal(){
@@ -728,15 +821,103 @@ async function changePassword(e){
   toast(r.message,!r.ok);if(r.ok)closeModal();
 }
 
+function upsertLocalRecord(entity,record){
+  if(!record||!record.ID)return;
+  if(STATE.entity===entity&&!STATE.headers.length)STATE.headers=['ID',...(ENTITY_FIELDS[entity]||Object.keys(record))];
+  const key=entityCacheKey(entity);
+  const current=(STATE.entity===entity?STATE.allRows:(STATE.entityCache[key]?.rows||[])).map(r=>Object.assign({},r));
+  const index=current.findIndex(r=>String(r.ID)===String(record.ID));
+  if(index>=0)current[index]=Object.assign({},current[index],record);
+  else current.unshift(Object.assign({},record));
+
+  if(STATE.entity===entity)STATE.allRows=current;
+  const headers=(STATE.entity===entity&&STATE.headers.length?STATE.headers:(STATE.entityCache[key]?.headers||Object.keys(record))).slice();
+  STATE.entityCache[key]={headers,rows:current.map(r=>Object.assign({},r)),total:current.length};
+}
+
+function removeLocalRecord(entity,id){
+  const key=entityCacheKey(entity);
+  if(STATE.entity===entity)STATE.allRows=STATE.allRows.filter(r=>String(r.ID)!==String(id));
+  if(STATE.entityCache[key]){
+    STATE.entityCache[key].rows=STATE.entityCache[key].rows.filter(r=>String(r.ID)!==String(id));
+    STATE.entityCache[key].total=STATE.entityCache[key].rows.length;
+  }
+  const lookup=STATE.boot?.lookups?.[entity];
+  if(Array.isArray(lookup))STATE.boot.lookups[entity]=lookup.filter(r=>String(r.ID)!==String(id));
+}
+
+function upsertLookupRecord(entity,record){
+  const lookup=STATE.boot?.lookups?.[entity];
+  if(!Array.isArray(lookup)||!record?.ID)return;
+  const index=lookup.findIndex(r=>String(r.ID)===String(record.ID));
+  if(index>=0)lookup[index]=Object.assign({},lookup[index],record);
+  else lookup.unshift(Object.assign({},record));
+}
+
 async function refreshLookups(){
+  // بقيت هذه الدالة للتوافق فقط؛ لا تُستدعى بعد الحفظ حتى لا نعيد bootstrap كاملًا.
   const r=await server('bootstrap',{token:STATE.token});
   if(r.ok){STATE.boot=r;STATE.boot.settings=Object.assign({},DEFAULT_COMPANY,r.settings||{});setupBranchFilter();}
 }
+const LOOKUP_FIELD_ENTITY={
+  BranchID:'BRANCHES',ProjectID:'PROJECTS',ClientID:'CLIENTS',SupplierID:'SUPPLIERS',
+  BankID:'BANKS',WarehouseID:'WAREHOUSES',MaterialID:'MATERIALS',InvoiceID:'INVOICES',
+  RequestID:'PURCHASE_REQUESTS'
+};
+function lookupRecordLabel(entity,r){
+  if(!r)return'';
+  const labels={
+    BRANCHES:r.Name,
+    PROJECTS:r.Name||r.ProjectNo,
+    SUPPLIERS:r.Name,
+    CLIENTS:r.Name,
+    BANKS:r.Name||r.AccountNo,
+    WAREHOUSES:r.Name||r.Code,
+    MATERIALS:r.Name||r.Code,
+    INVOICES:r.InvoiceNo,
+    PURCHASE_REQUESTS:r.RequestNo,
+    PURCHASE_ORDERS:r.OrderNo,
+    PAYMENTS:r.PaymentNo,
+    USERS:r.Name||r.Email
+  };
+  return labels[entity]||r.Name||r.ProjectNo||r.RequestNo||r.OrderNo||r.InvoiceNo||r.PaymentNo||r.Code||r.Email||r.ID;
+}
+function resolveReferenceLabel(field,value,record){
+  if(value===null||value===undefined||value==='')return'';
+  const id=String(value);
+  if(field==='PartyID'){
+    const preferred=record?.PartyType==='SUPPLIER'?'SUPPLIERS':record?.PartyType==='CLIENT'?'CLIENTS':'';
+    const entities=preferred?[preferred]:['SUPPLIERS','CLIENTS'];
+    for(const entity of entities){
+      const row=(STATE.boot?.lookups?.[entity]||[]).find(x=>String(x.ID)===id);
+      if(row)return lookupRecordLabel(entity,row);
+    }
+    for(const entity of ['SUPPLIERS','CLIENTS']){
+      const row=(STATE.boot?.lookups?.[entity]||[]).find(x=>String(x.ID)===id);
+      if(row)return lookupRecordLabel(entity,row);
+    }
+    return id;
+  }
+  const entity=LOOKUP_FIELD_ENTITY[field];
+  if(!entity)return String(value);
+  const row=(STATE.boot?.lookups?.[entity]||[]).find(x=>String(x.ID)===id);
+  return row?lookupRecordLabel(entity,row):id;
+}
 function lookupOptions(entity,value){
   const rows=STATE.boot.lookups[entity]||[];
-  return rows.map(r=>{const label=r.Name||r.ProjectNo||r.InvoiceNo||r.Code||r.ID;return`<option value="${escAttr(r.ID)}" ${String(value)===String(r.ID)?'selected':''}>${esc(label)}</option>`}).join('');
+  const current=String(value??'');
+  let found=false;
+  const options=rows.map(r=>{
+    const selected=current===String(r.ID);
+    if(selected)found=true;
+    return`<option value="${escAttr(r.ID)}" ${selected?'selected':''}>${esc(lookupRecordLabel(entity,r))}</option>`;
+  }).join('');
+  return options+(!found&&current?`<option value="${escAttr(current)}" selected>${esc(current)}</option>`:'');
 }
-function debouncedLoad(){clearTimeout(STATE.searchTimer);STATE.searchTimer=setTimeout(loadEntity,350)}
+function debouncedLoad(){
+  clearTimeout(STATE.searchTimer);
+  STATE.searchTimer=setTimeout(applyEntitySearch,120);
+}
 function closeModal(){document.getElementById('modal').classList.add('hidden');document.getElementById('modal').innerHTML=''}
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open')}
 function title(t,s=''){document.getElementById('pageTitle').textContent=t;document.getElementById('pageSubtitle').textContent=s}
@@ -835,8 +1016,18 @@ function server(action,payload){
 function localToday(){const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)}
 function val(id){return document.getElementById(id).value.trim()}
 function fieldLabel(f){return FIELD_META[f]?.label||f}
-function display(v,f){if(v===true)return'نعم';if(v===false)return'لا';if(v===null||v===undefined)return'';if(f==='ItemsJSON'){try{return JSON.parse(v).map(x=>x.name).join('، ')}catch(e){}}return String(v)}
-function renderCell(v,f){const s=display(v,f);if(['Status','Type','CurrentStage'].includes(f))return`<span class="badge ${statusClass(s)}">${esc(statusText(s))}</span>`;if(typeof v==='number'||['Total','Balance','Paid','CurrentBalance','Salary','Amount','Debit','Credit'].includes(f))return esc(new Intl.NumberFormat('ar-DZ').format(num(v)));return esc(s)}
+function display(v,f,record){
+  if(v===true)return'نعم';if(v===false)return'لا';if(v===null||v===undefined)return'';
+  if(f==='ItemsJSON'){try{return JSON.parse(v).map(x=>x.name).join('، ')}catch(e){}}
+  if(f==='PartyID'||LOOKUP_FIELD_ENTITY[f])return resolveReferenceLabel(f,v,record);
+  return String(v);
+}
+function renderCell(v,f,record){
+  const s=display(v,f,record);
+  if(['Status','Type','CurrentStage'].includes(f))return`<span class="badge ${statusClass(s)}">${esc(statusText(s))}</span>`;
+  if(typeof v==='number'||['Total','Balance','Paid','CurrentBalance','Salary','Amount','Debit','Credit'].includes(f))return esc(new Intl.NumberFormat('ar-DZ').format(num(v)));
+  return esc(s);
+}
 function statusText(s){return({ACTIVE:'جارية',PAUSED:'متوقفة',COMPLETED:'منتهية',PAID:'مدفوعة',PARTIAL:'جزئية',UNPAID:'غير مدفوعة',APPROVED:'معتمد',IN_APPROVAL:'قيد الاعتماد',REJECTED:'مرفوض',DRAFT:'مسودة',PENDING:'معلقة',RECEIVED:'مستلم',WORKING:'تعمل',MAINTENANCE:'صيانة',AVAILABLE:'متاحة',BRANCH_MANAGER:'مدير الفرع',FINANCE_MANAGER:'المدير المالي',GENERAL_MANAGER:'المدير العام',COMPLETED:'منتهية'})[s]||s}
 function statusClass(s){s=String(s).toUpperCase();if(['PAID','APPROVED','ACTIVE','COMPLETED','RECEIVED','AVAILABLE'].includes(s))return'ok';if(['PENDING','PARTIAL','IN_APPROVAL','MAINTENANCE','DRAFT'].includes(s))return'warn';if(['REJECTED','OVERDUE','CANCELLED','OUT_OF_SERVICE'].includes(s))return'danger';return''}
 function money(v,c='DZD'){return new Intl.NumberFormat('ar-DZ',{maximumFractionDigits:2}).format(num(v))+' '+c}
