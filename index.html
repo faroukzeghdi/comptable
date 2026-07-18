@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
@@ -16,7 +17,7 @@
     .hidden{display:none!important}.app{min-height:100vh}.login-wrap{min-height:100vh;display:grid;place-items:center;padding:24px;background:
       radial-gradient(circle at 15% 10%,#93c5fd66,transparent 34%),linear-gradient(145deg,#f8fafc,#eaf2ff)}
     .login-card{width:min(440px,100%);background:#fff;border:1px solid #ffffffaa;border-radius:24px;padding:32px;box-shadow:var(--shadow)}
-    .logo{width:58px;height:58px;border-radius:18px;background:linear-gradient(135deg,var(--brand),#60a5fa);display:grid;place-items:center;color:white;font-weight:900;font-size:22px}
+    .logo{width:58px;height:58px;border-radius:18px;background:#fff;display:grid;place-items:center;color:var(--brand);font-weight:900;font-size:18px;overflow:hidden;border:1px solid #dbeafe}.logo img{width:100%;height:100%;object-fit:contain;padding:4px}.company-mini{font-size:11px;line-height:1.7;background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:10px;margin:12px 0;color:#475467}
     h1,h2,h3,p{margin-top:0}.login-card h1{font-size:25px;margin:18px 0 8px}.muted{color:var(--muted)}
     label{display:block;font-size:13px;font-weight:700;margin:14px 0 7px}
     input,select,textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:#fff;color:var(--ink);outline:none}
@@ -30,7 +31,7 @@
     .brand strong{display:block;color:#fff}.brand small{color:#93b4df}.nav{padding-top:14px}.nav button{width:100%;border:0;background:transparent;color:#c8daf3;text-align:right;padding:10px 12px;border-radius:10px;margin:2px 0;display:flex;align-items:center;gap:10px}
     .nav button:hover,.nav button.active{background:#ffffff13;color:#fff}.nav .sep{font-size:11px;color:#7899c5;margin:17px 12px 6px}
     .main{min-width:0}.topbar{height:74px;background:#ffffffdd;backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:5}
-    .topbar-left,.topbar-right{display:flex;align-items:center;gap:12px}.menu-btn{display:none}.avatar{width:38px;height:38px;border-radius:50%;background:#dbeafe;display:grid;place-items:center;font-weight:900;color:#1d4ed8}
+    .topbar-left,.topbar-right{display:flex;align-items:center;gap:12px}.branch-filter{min-width:190px}.branch-filter select{padding:8px 10px;font-size:12px;background:#f8fafc}.menu-btn{display:none}.avatar{width:38px;height:38px;border-radius:50%;background:#dbeafe;display:grid;place-items:center;font-weight:900;color:#1d4ed8}
     .content{padding:24px;max-width:1700px;margin:auto}.page-head{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:20px}.page-head h2{margin:0;font-size:24px}
     .actions{display:flex;gap:8px;flex-wrap:wrap}.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:0 3px 12px rgba(16,24,40,.04)}
     .metric{display:flex;justify-content:space-between;align-items:flex-start}.metric-icon{width:42px;height:42px;border-radius:12px;background:#eff6ff;display:grid;place-items:center;font-size:20px}.metric .value{font-size:25px;font-weight:900;margin-top:12px}.metric .title{font-size:13px;color:var(--muted)}
@@ -50,9 +51,9 @@
     .map-box{height:320px;border-radius:12px;background:linear-gradient(135deg,#dbeafe,#eef4ff);position:relative;overflow:hidden}.map-grid{position:absolute;inset:0;background-image:linear-gradient(#fff8 1px,transparent 1px),linear-gradient(90deg,#fff8 1px,transparent 1px);background-size:35px 35px}
     .map-pin{position:absolute;transform:translate(-50%,-50%);width:28px;height:28px;background:var(--danger);color:#fff;border-radius:50% 50% 50% 0;rotate:-45deg;display:grid;place-items:center;box-shadow:0 4px 12px #0003}.map-pin span{rotate:45deg;font-size:11px}.map-note{position:absolute;bottom:12px;right:12px;background:#ffffffdd;padding:8px 10px;border-radius:8px;font-size:11px}
     .items-editor{border:1px solid var(--line);border-radius:12px;padding:12px}.items-row{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:8px;margin-bottom:8px;align-items:end}
-    .file-drop{border:1px dashed #98a2b3;border-radius:12px;padding:16px;text-align:center;background:#f9fafb}
+    .file-drop{border:1px dashed #98a2b3;border-radius:12px;padding:16px;text-align:center;background:#f9fafb}.annual-note{background:#fffaeb;border:1px solid #fedf89;color:#7a2e0e;border-radius:10px;padding:10px 12px;font-size:12px;margin-top:14px}.summary-strip{display:flex;gap:8px;flex-wrap:wrap}.summary-strip .badge{font-size:12px;padding:7px 10px}
     @media(max-width:1100px){.cards{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.shell{grid-template-columns:230px 1fr}}
-    @media(max-width:760px){.shell{display:block}.sidebar{position:fixed;right:-290px;width:270px;z-index:20;transition:.25s}.sidebar.open{right:0}.menu-btn{display:block}.content{padding:16px}.topbar{padding:0 14px}.cards{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.form-field.full{grid-column:auto}.page-head{align-items:flex-start}.items-row{grid-template-columns:1fr 1fr}.items-row .item-name{grid-column:1/-1}}
+    @media(max-width:760px){.shell{display:block}.sidebar{position:fixed;right:-290px;width:270px;z-index:20;transition:.25s}.sidebar.open{right:0}.menu-btn{display:block}.content{padding:16px}.topbar{padding:0 14px}.cards{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.form-field.full{grid-column:auto}.page-head{align-items:flex-start}.topbar{height:auto;min-height:68px;flex-wrap:wrap;padding-top:8px;padding-bottom:8px}.topbar-left{flex:1;min-width:0;flex-wrap:wrap}.topbar-right{gap:7px}.branch-filter{width:100%;min-width:0;order:3}.branch-filter select{width:100%}.items-row{grid-template-columns:1fr 1fr}.items-row .item-name{grid-column:1/-1}}
   </style>
 </head>
 <body>
@@ -61,9 +62,9 @@
 
 <section id="loginView" class="login-wrap">
   <div class="login-card">
-    <div class="logo">ZF</div>
+    <div class="logo"><img class="company-logo" src="https://drive.google.com/thumbnail?id=1np1VwVd0tAE9McDmUWSM8nBtC_2ADwlY&amp;sz=w600" alt="ATIA BELGACEM" onerror="this.remove();this.parentElement.textContent='AB'"></div>
     <h1>نظام إدارة شركة الأشغال</h1>
-    <p class="muted">إدارة الفروع، الورشات، المالية، المخزون والموارد من مكان واحد.</p>
+    <p class="muted">إدارة الفروع، الورشات، المالية، المخزون والموارد من مكان واحد.</p><div class="company-mini"><b>DOITA: ATIA BELGACEM</b><br>PLACE MARCHE REGUIBA W . Et OUED</div>
     <form id="loginForm">
       <label>البريد الإلكتروني</label>
       <input id="loginEmail" type="email" autocomplete="username" required placeholder="admin@company.com">
@@ -71,7 +72,7 @@
       <input id="loginPassword" type="password" autocomplete="current-password" required placeholder="••••••••">
       <button class="btn btn-primary" type="submit">تسجيل الدخول</button>
       <div id="loginError" class="error hidden"></div>
-      <div id="connectionInfo" class="muted" style="font-size:12px;margin-top:12px">الإصدار 1.2.1 — جارٍ التحقق من الخادم…</div>
+      <div id="connectionInfo" class="muted" style="font-size:12px;margin-top:12px">الإصدار 1.3.0 — جارٍ التحقق من الخادم…</div>
     </form>
   </div>
 </section>
@@ -79,14 +80,14 @@
 <section id="appView" class="app hidden">
   <div class="shell">
     <aside id="sidebar" class="sidebar">
-      <div class="brand"><div class="logo">ZF</div><div><strong id="companyName">ERP</strong><small>Construction Management</small></div></div>
+      <div class="brand"><div class="logo"><img class="company-logo" src="https://drive.google.com/thumbnail?id=1np1VwVd0tAE9McDmUWSM8nBtC_2ADwlY&amp;sz=w600" alt="ATIA BELGACEM" onerror="this.remove();this.parentElement.textContent='AB'"></div><div><strong id="companyName">ERP</strong><small>Construction Management</small></div></div>
       <nav id="nav" class="nav"></nav>
     </aside>
     <main class="main">
       <header class="topbar">
         <div class="topbar-left">
           <button class="btn menu-btn" onclick="toggleSidebar()">☰</button>
-          <div><strong id="pageTitle">لوحة القيادة</strong><div class="muted" style="font-size:12px" id="pageSubtitle"></div></div>
+          <div><strong id="pageTitle">لوحة القيادة</strong><div class="muted" style="font-size:12px" id="pageSubtitle"></div></div><div id="branchFilterWrap" class="branch-filter hidden"><select id="branchFilter" onchange="changeBranchFilter(this.value)"></select></div>
         </div>
         <div class="topbar-right">
           <button class="btn btn-sm" onclick="openPasswordModal()">🔐</button>
@@ -105,8 +106,16 @@
 <script>
 const CONFIG = {
   // ألصق هنا رابط نشر Google Apps Script الذي ينتهي بـ /exec
-  GAS_WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbyIN2f0tNF5ejL7-35Y7CJAmQlYfb_06GWzG0pZUeumI7-BnN8CjpNV0Rw1QmiItkpp/exec',
+  GAS_WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbwOQiHjkS9HznahFOYU4vyrNykTHMkcbOMuH_y4BuWac3MI9ph63sZgJhrzpbN2WIPhGA/exec',
   REQUEST_TIMEOUT_MS: 60000
+};
+
+const DEFAULT_COMPANY = {
+  companyName:'ATIA BELGACEM', legalName:'DOITA: ATIA BELGACEM',
+  address:'PLACE MARCHE REGUIBA W . Et OUED', rc:'01A27189t2-00139',
+  nif:'178390800115124', art:'39080000099', nis:'197839080011530',
+  logoUrl:'https://drive.google.com/thumbnail?id=1np1VwVd0tAE9McDmUWSM8nBtC_2ADwlY&sz=w600',
+  currency:'DZD', tvaRate:19, tvaRates:[0,9,19], zakatRate:2.5
 };
 
 const API_PENDING = new Map();
@@ -135,7 +144,8 @@ window.addEventListener('message', event => {
 
 const STATE = {
   token: localStorage.getItem('zf_erp_token') || '',
-  boot: null, entity: null, rows: [], currentRecord: null, searchTimer: null
+  branchId: localStorage.getItem('zf_erp_branch') || '',
+  boot: null, entity: null, view:'dashboard', rows: [], currentRecord: null, searchTimer: null, annual: null
 };
 
 const ENTITY_META = {
@@ -181,12 +191,12 @@ const FIELD_META = {
   AttendanceDays:{label:'أيام الحضور',type:'number'}, AbsenceDays:{label:'أيام الغياب',type:'number'}, DocumentURL:{label:'رابط الوثائق',type:'url'},
   Code:{label:'الرمز'}, Category:{label:'الصنف'}, CurrentLocation:{label:'المكان الحالي'}, LastMaintenance:{label:'آخر صيانة',type:'date'},
   NextMaintenance:{label:'الصيانة القادمة',type:'date'}, Fuel:{label:'الوقود',type:'number'}, OperatingHours:{label:'ساعات التشغيل',type:'number'},
-  RequestNo:{label:'رقم الطلب'}, Requester:{label:'الطالب'}, ItemsJSON:{label:'المواد',type:'items'}, Total:{label:'الإجمالي',type:'number'},
+  RequestNo:{label:'رقم الطلب'}, Requester:{label:'الطالب'}, Total:{label:'الإجمالي',type:'number'},
   CurrentStage:{label:'مرحلة الاعتماد',readonly:true}, OrderNo:{label:'رقم أمر الشراء'}, RequestID:{label:'طلب الشراء',select:'PURCHASE_REQUESTS'},
   ExpectedDate:{label:'تاريخ التسليم المتوقع',type:'date'}, ReceivedDate:{label:'تاريخ الاستلام',type:'date'}, Location:{label:'الموقع'},
   Manager:{label:'المسؤول'}, Unit:{label:'الوحدة'}, MinQty:{label:'الحد الأدنى',type:'number'}, CurrentQty:{label:'الرصيد',type:'number'},
   UnitPrice:{label:'سعر الوحدة',type:'number'}, Quantity:{label:'الكمية',type:'number'}, InvoiceNo:{label:'رقم الفاتورة'},
-  PartyType:{label:'نوع الطرف'}, PartyID:{label:'الطرف'}, Subtotal:{label:'المبلغ دون ضريبة',type:'number'}, TVA:{label:'TVA',type:'number'},
+  PartyType:{label:'نوع الطرف'}, PartyID:{label:'الطرف'}, InvoiceKind:{label:'نوع وثيقة الفاتورة'}, TaxRate:{label:'نسبة TVA %'}, ItemsJSON:{label:'تفاصيل المواد/الخدمات',type:'items'}, Subtotal:{label:'المبلغ دون ضريبة',type:'number'}, TVA:{label:'مبلغ TVA',type:'number'},
   Paid:{label:'المدفوع',type:'number'}, Balance:{label:'الباقي',type:'number'}, AttachmentURL:{label:'رابط المرفق',type:'url'},
   PaymentNo:{label:'رقم الدفع'}, Direction:{label:'الاتجاه'}, Method:{label:'طريقة الدفع'}, AccountType:{label:'نوع الحساب'},
   AccountID:{label:'الحساب'}, Amount:{label:'المبلغ',type:'number'}, EntryNo:{label:'رقم القيد'}, AccountDebit:{label:'الحساب المدين'},
@@ -212,7 +222,7 @@ const ENTITY_FIELDS = {
   WAREHOUSES:['Code','Name','BranchID','Manager','Location','Active'],
   MATERIALS:['Code','Name','Unit','WarehouseID','MinQty','CurrentQty','UnitPrice','Active'],
   STOCK_MOVEMENTS:['Date','MaterialID','WarehouseID','Type','Quantity','UnitPrice','Reference','ProjectID','Notes'],
-  INVOICES:['InvoiceNo','Type','PartyType','PartyID','Date','DueDate','Subtotal','TVA','Total','Paid','Balance','Status','ProjectID','AttachmentURL','Notes'],
+  INVOICES:['InvoiceNo','InvoiceKind','Type','PartyType','PartyID','Date','DueDate','ProjectID','ItemsJSON','Subtotal','TaxRate','TVA','Total','Paid','Balance','Status','AttachmentURL','Notes'],
   PAYMENTS:['PaymentNo','Date','InvoiceID','PartyType','PartyID','Direction','Method','AccountType','AccountID','Amount','Reference','Notes'],
   JOURNAL:['EntryNo','Date','AccountDebit','AccountCredit','Description','Debit','Credit','ReferenceType','ReferenceID'],
   USERS:['Email','Name','Role','BranchID','Password','Active']
@@ -226,7 +236,7 @@ const ENUMS = {
   PURCHASE_REQUESTS:{Status:[['DRAFT','مسودة'],['IN_APPROVAL','قيد الاعتماد'],['APPROVED','معتمد'],['REJECTED','مرفوض']]},
   PURCHASE_ORDERS:{Status:[['DRAFT','مسودة'],['SENT','مرسل'],['PARTIAL','استلام جزئي'],['RECEIVED','مستلم'],['CANCELLED','ملغى']]},
   STOCK_MOVEMENTS:{Type:[['IN','دخول'],['OUT','خروج'],['RETURN_IN','إرجاع داخل'],['ADJUST_PLUS','تسوية زيادة'],['ADJUST_MINUS','تسوية نقص']]},
-  INVOICES:{Type:[['PURCHASE','شراء'],['SALE','بيع'],['SERVICE','خدمة']],PartyType:[['SUPPLIER','مورد'],['CLIENT','زبون']],Status:[['UNPAID','غير مدفوعة'],['PARTIAL','مدفوعة جزئيًا'],['PAID','مدفوعة'],['CANCELLED','ملغاة']]},
+  INVOICES:{InvoiceKind:[['NORMAL','فاتورة عادية'],['PROFORMA','فاتورة شكلية'],['SITUATION','وضعية أشغال'],['FINAL','فاتورة نهائية'],['CREDIT_NOTE','إشعار دائن']],Type:[['PURCHASE','شراء'],['SALE','بيع'],['SERVICE','خدمة']],PartyType:[['SUPPLIER','مورد'],['CLIENT','زبون']],TaxRate:[['0','0%'],['9','9%'],['19','19%']],Status:[['UNPAID','غير مدفوعة'],['PARTIAL','مدفوعة جزئيًا'],['PAID','مدفوعة'],['CANCELLED','ملغاة']]},
   PAYMENTS:{PartyType:[['SUPPLIER','مورد'],['CLIENT','زبون']],Direction:[['OUT','دفع'],['IN','قبض']],Method:[['CASH','نقدًا'],['BANK_TRANSFER','تحويل بنكي'],['CHEQUE','شيك']],AccountType:[['BANK','بنك'],['CASH','صندوق']]},
   USERS:{Role:Object.entries({GENERAL_MANAGER:'المدير العام',FINANCE_MANAGER:'المدير المالي',BRANCH_MANAGER:'مدير الفرع',SITE_MANAGER:'مسؤول الورشة',ACCOUNTANT:'المحاسب',STOREKEEPER:'أمين المخزن',HR_MANAGER:'مسؤول الموارد البشرية',PURCHASING:'المشتريات'})}
 };
@@ -288,14 +298,25 @@ async function startApp(){
     }
 
     STATE.boot=res;
+    STATE.boot.settings=Object.assign({},DEFAULT_COMPANY,res.settings||{});
+    const rates=(STATE.boot.settings.tvaRates||[0,9,19]).map(String);
+    ENUMS.INVOICES.TaxRate=rates.map(v=>[v,v+'%']);
+    const branchIds=(STATE.boot.lookups.BRANCHES||[]).map(b=>String(b.ID));
+    if(STATE.boot.user.BranchID) STATE.branchId=STATE.boot.user.BranchID;
+    else if(STATE.branchId&&!branchIds.includes(String(STATE.branchId))) STATE.branchId='';
 
-    document.getElementById('companyName').textContent=res.settings.companyName || 'ZF ERP';
+    document.getElementById('companyName').textContent=STATE.boot.settings.companyName || 'ZF ERP';
     document.getElementById('userName').textContent=res.user.Name || res.user.Email || 'مستخدم';
     document.getElementById('userRole').textContent=res.user.RoleName || res.user.Role || '';
     document.getElementById('avatar').textContent=(res.user.Name || 'م').slice(0,1);
+    applyCompanyBranding();
+    setupBranchFilter();
 
     buildNav();
-    showDashboard(res.dashboard);
+    if(STATE.branchId){
+      const filtered=await server('dashboard',{token:STATE.token,branchId:STATE.branchId});
+      showDashboard(filtered&&filtered.ok?filtered:res.dashboard);
+    }else showDashboard(res.dashboard);
 
     // لا نخفي صفحة الدخول إلا بعد نجاح رسم لوحة القيادة.
     document.getElementById('loginView').classList.add('hidden');
@@ -314,21 +335,45 @@ async function startApp(){
   }
 }
 
+function applyCompanyBranding(){
+  const cfg=STATE.boot?.settings||DEFAULT_COMPANY;
+  document.querySelectorAll('.company-logo').forEach(img=>{if(img&&cfg.logoUrl)img.src=cfg.logoUrl});
+  document.title=(cfg.companyName||'ATIA BELGACEM')+' ERP';
+}
+
+function setupBranchFilter(){
+  const wrap=document.getElementById('branchFilterWrap'),select=document.getElementById('branchFilter');
+  const branches=STATE.boot?.lookups?.BRANCHES||[];
+  if(!branches.length){wrap.classList.add('hidden');return}
+  const canAll=['GENERAL_MANAGER','FINANCE_MANAGER'].includes(STATE.boot.user.Role);
+  select.innerHTML=(canAll?'<option value="">كل الفروع</option>':'')+branches.map(b=>`<option value="${escAttr(b.ID)}" ${String(STATE.branchId)===String(b.ID)?'selected':''}>${esc(b.Name||b.ID)}</option>`).join('');
+  if(!canAll&&STATE.boot.user.BranchID){select.value=STATE.boot.user.BranchID;STATE.branchId=STATE.boot.user.BranchID}
+  wrap.classList.toggle('hidden',branches.length<2&&!canAll);
+}
+
+async function changeBranchFilter(value){
+  STATE.branchId=value||'';
+  localStorage.setItem('zf_erp_branch',STATE.branchId);
+  if(STATE.view==='annualReports') await showAnnualReports();
+  else if(STATE.entity) await loadEntity();
+  else await refreshDashboard();
+}
+
 function buildNav(){
   const nav=document.getElementById('nav');
   const groups=[
-    ['الرئيسية',[['dashboard','لوحة القيادة','📊']]],
+    ['الرئيسية',[['dashboard','لوحة القيادة','📊'],['annualReports','التقارير السنوية والزكاة','📅']]],
     ['العمليات',['PROJECTS','BRANCHES','PURCHASE_REQUESTS','PURCHASE_ORDERS','WAREHOUSES','MATERIALS','STOCK_MOVEMENTS']],
     ['المالية',['SUPPLIERS','CLIENTS','BANKS','BANK_TRANSACTIONS','CASH_TRANSACTIONS','INVOICES','PAYMENTS','JOURNAL']],
     ['الموارد',['WORKERS','EQUIPMENT','USERS','NOTIFICATIONS']]
   ];
   let html='';
   groups.forEach(([title,items])=>{
-    const visible=items.filter(x=>Array.isArray(x)||STATE.boot.entities.includes(x));
+    const visible=items.filter(x=>Array.isArray(x)?(x[0]!=='annualReports'||STATE.boot.entities.includes('INVOICES')):STATE.boot.entities.includes(x));
     if(!visible.length)return;
     html+=`<div class="sep">${title}</div>`;
     visible.forEach(item=>{
-      if(Array.isArray(item)) html+=`<button data-view="${item[0]}" onclick="showDashboard()"><span>${item[2]}</span>${item[1]}</button>`;
+      if(Array.isArray(item)){const fn=item[0]==='annualReports'?'showAnnualReports()':'showDashboard()';html+=`<button data-view="${item[0]}" onclick="${fn}"><span>${item[2]}</span>${item[1]}</button>`;}
       else {const m=ENTITY_META[item]||{label:item,icon:'•'};html+=`<button data-view="${item}" onclick="openEntity('${item}')"><span>${m.icon}</span>${m.label}</button>`}
     });
   });
@@ -341,7 +386,7 @@ function setActiveNav(view){
 }
 
 function showDashboard(data){
-  setActiveNav('dashboard');STATE.entity=null;
+  setActiveNav('dashboard');STATE.entity=null;STATE.view='dashboard';
   if(data) STATE.boot.dashboard=data;
   const d=STATE.boot.dashboard,c=d.cards,cur=STATE.boot.settings.currency;
   title('لوحة القيادة','نظرة شاملة على نشاط الشركة');
@@ -354,7 +399,10 @@ function showDashboard(data){
     ['📈','ربح الشهر',money(c.monthlyProfit,cur)],
     ['⚠️','الفواتير المتأخرة',c.overdue],
     ['🧱','مواد تحت الحد',c.lowStock],
-    ['🔧','صيانة قريبة',c.dueMaintenance]
+    ['🔧','صيانة قريبة',c.dueMaintenance],
+    ['📅','الربح السنوي '+esc(d.year||''),money(c.annualProfit,cur)],
+    ['🕌','تقدير الزكاة',money(c.zakatEstimate,cur)],
+    ['🧾','صافي TVA السنوي',money(c.annualTvaNet,cur)]
   ];
   const cards=metrics.map(x=>`<div class="card metric"><div><div class="title">${x[1]}</div><div class="value">${x[2]}</div></div><div class="metric-icon">${x[0]}</div></div>`).join('');
   const projects=(d.projects||[]).slice(0,8).map(p=>`<div class="project-row">
@@ -374,7 +422,7 @@ function showDashboard(data){
       <section class="panel"><div class="panel-head"><h3>خريطة الورشات</h3></div>${renderMap(d.projects||[])}</section>
       <section class="panel"><div class="panel-head"><h3>ملخص سريع</h3></div>
         <p class="muted">اضغط على أي وحدة من القائمة الجانبية لإدارة البيانات، أو استخدم أزرار PDF وExcel لاستخراج التقارير.</p>
-        <button class="btn btn-primary" onclick="openEntity('PURCHASE_REQUESTS')">إنشاء طلب شراء</button>
+        <div class="actions"><button class="btn btn-primary" onclick="openEntity('PURCHASE_REQUESTS')">إنشاء طلب شراء</button><button class="btn" onclick="showAnnualReports()">التفاصيل السنوية والزكاة</button></div>
       </section>
     </div>`;
 }
@@ -389,12 +437,52 @@ function renderMap(projects){
 }
 
 async function refreshDashboard(){
-  setLoading(true);const r=await server('dashboard',{token:STATE.token});setLoading(false);
+  setLoading(true);const r=await server('dashboard',{token:STATE.token,branchId:STATE.branchId});setLoading(false);
   if(r.ok){STATE.boot.dashboard=r;showDashboard(r)}else toast(r.message,true);
 }
 
+async function showAnnualReports(){
+  STATE.entity=null;STATE.view='annualReports';setActiveNav('annualReports');
+  const currentYear=String(STATE.annual?.year||new Date().getFullYear());
+  title('التقارير السنوية والزكاة','تفاصيل الأرباح والضرائب حسب السنة والفرع');
+  document.getElementById('content').innerHTML=`
+    <div class="page-head"><div><h2>📅 التقرير السنوي</h2><p class="muted">المبيعات، المشتريات، الأرباح، TVA وتقدير الزكاة.</p></div>
+      <div class="actions"><input id="annualYear" type="number" min="2000" max="2100" value="${escAttr(currentYear)}" style="width:120px"><button class="btn btn-primary" onclick="loadAnnualReport()">عرض</button><button class="btn" onclick="printAnnualReport()">طباعة</button></div></div>
+    <div id="annualArea"><div class="empty">جاري تحميل التقرير...</div></div>`;
+  await loadAnnualReport();
+}
+
+async function loadAnnualReport(){
+  const year=String(document.getElementById('annualYear')?.value||new Date().getFullYear());
+  setLoading(true);
+  const r=await server('annualReport',{token:STATE.token,year,branchId:STATE.branchId});
+  setLoading(false);
+  if(!r.ok){toast(r.message,true);return}
+  STATE.annual=r;
+  const s=r.summary,cur=STATE.boot.settings.currency;
+  const monthNames=['جانفي','فيفري','مارس','أفريل','ماي','جوان','جويلية','أوت','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+  const monthRows=(r.months||[]).map((m,i)=>`<tr><td>${monthNames[i]}</td><td>${money(m.sales,cur)}</td><td>${money(m.purchases,cur)}</td><td>${money(m.profit,cur)}</td><td>${money(m.tvaCollected,cur)}</td><td>${money(m.tvaPaid,cur)}</td><td>${num(m.invoiceCount)}</td></tr>`).join('');
+  const branchRows=(r.branches||[]).map(b=>`<tr><td>${esc(b.branchName)}</td><td>${money(b.sales,cur)}</td><td>${money(b.purchases,cur)}</td><td>${money(b.profit,cur)}</td><td>${num(b.invoiceCount)}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">لا توجد بيانات فروع لهذه السنة.</td></tr>';
+  document.getElementById('annualArea').innerHTML=`
+    <div class="cards">
+      <div class="card metric"><div><div class="title">إجمالي المبيعات</div><div class="value">${money(s.sales,cur)}</div></div><div class="metric-icon">📈</div></div>
+      <div class="card metric"><div><div class="title">إجمالي المشتريات/الخدمات</div><div class="value">${money(s.purchases,cur)}</div></div><div class="metric-icon">📉</div></div>
+      <div class="card metric"><div><div class="title">الربح السنوي</div><div class="value">${money(s.profit,cur)}</div></div><div class="metric-icon">💰</div></div>
+      <div class="card metric"><div><div class="title">تقدير الزكاة ${num(s.zakatRate)}%</div><div class="value">${money(s.zakatEstimate,cur)}</div></div><div class="metric-icon">🕌</div></div>
+      <div class="card metric"><div><div class="title">TVA محصلة</div><div class="value">${money(s.tvaCollected,cur)}</div></div><div class="metric-icon">🧾</div></div>
+      <div class="card metric"><div><div class="title">TVA مدفوعة</div><div class="value">${money(s.tvaPaid,cur)}</div></div><div class="metric-icon">📄</div></div>
+      <div class="card metric"><div><div class="title">صافي TVA</div><div class="value">${money(s.tvaNet,cur)}</div></div><div class="metric-icon">⚖️</div></div>
+      <div class="card metric"><div><div class="title">عدد الفواتير</div><div class="value">${num(s.invoiceCount)}</div></div><div class="metric-icon">#</div></div>
+    </div>
+    <div class="grid2">
+      <section class="panel"><div class="panel-head"><h3>التفاصيل الشهرية — ${esc(r.year)}</h3></div><div class="table-wrap"><table class="data-table"><thead><tr><th>الشهر</th><th>المبيعات</th><th>المشتريات</th><th>الربح</th><th>TVA محصلة</th><th>TVA مدفوعة</th><th>الفواتير</th></tr></thead><tbody>${monthRows}</tbody></table></div></section>
+      <section class="panel"><div class="panel-head"><h3>التفاصيل حسب الفرع</h3></div><div class="table-wrap"><table class="data-table"><thead><tr><th>الفرع</th><th>المبيعات</th><th>المشتريات</th><th>الربح</th><th>الفواتير</th></tr></thead><tbody>${branchRows}</tbody></table></div></section>
+    </div>
+    <div class="annual-note">تقدير الزكاة إرشادي ومحسوب بنسبة ${num(s.zakatRate)}% من الربح السنوي الموجب المسجل في الفواتير. الوعاء الشرعي النهائي قد يختلف حسب السيولة والمخزون والديون والمستحقات.</div>`;
+}
+
 async function openEntity(entity){
-  STATE.entity=entity;setActiveNav(entity);
+  STATE.entity=entity;STATE.view=entity;setActiveNav(entity);
   const m=ENTITY_META[entity]||{label:entity};
   title(m.label,'إدارة السجلات والبحث والتقارير');
   document.getElementById('content').innerHTML=`
@@ -403,7 +491,7 @@ async function openEntity(entity){
     <section class="panel">
       <div class="toolbar">
         <div class="search"><span>⌕</span><input id="entitySearch" placeholder="بحث..." oninput="debouncedLoad()"></div>
-        <div class="actions"><button class="btn btn-sm" onclick="exportEntity('pdf')">PDF</button><button class="btn btn-sm" onclick="exportEntity('xlsx')">Excel</button><button class="btn btn-sm" onclick="loadEntity()">تحديث ↻</button></div>
+        <div class="actions"><button class="btn btn-sm" onclick="printCurrentReport()">طباعة</button><button class="btn btn-sm" onclick="exportEntity('pdf')">PDF</button><button class="btn btn-sm" onclick="exportEntity('xlsx')">Excel</button><button class="btn btn-sm" onclick="loadEntity()">تحديث ↻</button></div>
       </div>
       <div id="tableArea"><div class="empty">جاري التحميل...</div></div>
     </section>`;
@@ -414,7 +502,7 @@ async function loadEntity(){
   if(!STATE.entity)return;
   const search=document.getElementById('entitySearch')?.value||'';
   setLoading(true);
-  const r=await server('list',{token:STATE.token,entity:STATE.entity,search,pageSize:200});
+  const r=await server('list',{token:STATE.token,entity:STATE.entity,search,pageSize:200,branchId:STATE.branchId});
   setLoading(false);
   if(!r.ok){toast(r.message,true);return}
   STATE.rows=r.rows;renderTable(r.headers,r.rows);
@@ -439,11 +527,13 @@ function rowActions(entity,r){
     const t=entity==='SUPPLIERS'?'SUPPLIER':'CLIENT';
     extra+=`<button class="btn btn-sm" onclick="showStatement('${t}','${escAttr(r.ID)}')">كشف</button> `;
   }
+  extra+=`<button class="btn btn-sm" onclick="printRecord('${entity}','${escAttr(r.ID)}')">طباعة</button> `;
   return extra+`<button class="btn btn-sm" onclick="openForm('${entity}','${escAttr(r.ID)}')">تعديل</button>`;
 }
 
 function openForm(entity,id){
-  const record=id?STATE.rows.find(x=>x.ID===id)||{}:{};
+  const record=Object.assign({},id?STATE.rows.find(x=>x.ID===id)||{}:{});
+  if(!id&&entity==='INVOICES'){record.Date=localToday();record.TaxRate=String(STATE.boot.settings.tvaRate??19);record.InvoiceKind='NORMAL';record.Type='SALE';record.PartyType='CLIENT';record.Status='UNPAID';}
   STATE.currentRecord=record;
   const fields=ENTITY_FIELDS[entity]||[];
   const inputs=fields.map(f=>renderField(entity,f,record[f])).join('');
@@ -456,6 +546,11 @@ function openForm(entity,id){
     </form></div>`;
   document.getElementById('modal').classList.remove('hidden');
   if(fields.includes('ItemsJSON')) initItemsEditor(record.ItemsJSON);
+  if(entity==='INVOICES'){
+    const form=document.getElementById('recordForm');
+    ['TaxRate','Subtotal','Paid'].forEach(name=>form.elements[name]?.addEventListener('input',recalculateInvoiceForm));
+    recalculateInvoiceForm();
+  }
 }
 
 function renderField(entity,field,value){
@@ -502,6 +597,27 @@ function addItemRow(item={name:'',quantity:1,unitPrice:0}){
 function syncItems(){
   const items=[...document.querySelectorAll('.items-row')].map(r=>({name:r.querySelector('.item-name').value,quantity:num(r.querySelector('.item-qty').value),unitPrice:num(r.querySelector('.item-price').value)}));
   const inp=document.getElementById('ItemsJSON');if(inp)inp.value=JSON.stringify(items);
+  recalculateInvoiceForm();
+}
+
+function recalculateInvoiceForm(){
+  if(STATE.entity!=='INVOICES')return;
+  const form=document.getElementById('recordForm');if(!form)return;
+  const rows=[...document.querySelectorAll('.items-row')];
+  const hasItems=rows.some(r=>r.querySelector('.item-name').value.trim()||num(r.querySelector('.item-price').value));
+  let subtotal=hasItems?rows.reduce((sum,r)=>sum+num(r.querySelector('.item-qty').value)*num(r.querySelector('.item-price').value),0):num(form.elements.Subtotal?.value);
+  const rateRaw=String(form.elements.TaxRate?.value??'');
+  const hasRate=rateRaw!=='';
+  const rate=num(rateRaw);
+  const currentTva=num(form.elements.TVA?.value);
+  const currentTotal=num(form.elements.Total?.value);
+  const tva=hasRate?Math.round((subtotal*rate/100+Number.EPSILON)*100)/100:currentTva;
+  const total=hasRate?Math.round((subtotal+tva+Number.EPSILON)*100)/100:(currentTotal||Math.round((subtotal+tva+Number.EPSILON)*100)/100);
+  const paid=num(form.elements.Paid?.value);
+  if(form.elements.Subtotal)form.elements.Subtotal.value=subtotal.toFixed(2);
+  if(form.elements.TVA)form.elements.TVA.value=tva.toFixed(2);
+  if(form.elements.Total)form.elements.Total.value=total.toFixed(2);
+  if(form.elements.Balance)form.elements.Balance.value=Math.max(0,total-paid).toFixed(2);
 }
 
 async function saveForm(e,entity,id){
@@ -537,12 +653,53 @@ async function uploadAttachment(entity,recordId){
 }
 
 async function exportEntity(format){
-  setLoading(true);const r=await server('export',{token:STATE.token,entity:STATE.entity,format});setLoading(false);
+  setLoading(true);const r=await server('export',{token:STATE.token,entity:STATE.entity,format,branchId:STATE.branchId});setLoading(false);
   toast(r.message,!r.ok);if(r.ok)window.open(r.fileUrl,'_blank');
 }
 
+async function printRecord(entity,id){
+  const printWindow=window.open('','_blank');
+  if(!printWindow){toast('اسمح بالنوافذ المنبثقة للطباعة.',true);return}
+  printWindow.document.write('<p style="font-family:Tahoma;text-align:center;padding:40px">جاري تجهيز الوثيقة...</p>');
+  setLoading(true);
+  const r=await server('printDocument',{token:STATE.token,entity,id,branchId:STATE.branchId});
+  setLoading(false);
+  if(!r.ok){printWindow.close();toast(r.message,true);return}
+  openPrintWindow(r.html,r.title||'وثيقة',printWindow);
+}
+
+function printCurrentReport(){
+  if(!STATE.entity||!STATE.rows.length){toast('لا توجد بيانات للطباعة.',true);return}
+  const entity=STATE.entity,m=ENTITY_META[entity]||{label:entity};
+  const headers=(ENTITY_FIELDS[entity]||Object.keys(STATE.rows[0])).filter(h=>!['PasswordHash','ItemsJSON'].includes(h)).slice(0,12);
+  const table=`<div class="report-date">عدد السجلات: ${STATE.rows.length}</div><table><thead><tr>${headers.map(h=>`<th>${esc(fieldLabel(h))}</th>`).join('')}</tr></thead><tbody>${STATE.rows.map(r=>`<tr>${headers.map(h=>`<td>${esc(display(r[h],h))}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  openPrintWindow(buildClientPrintShell('تقرير '+m.label,table),'تقرير '+m.label);
+}
+
+function printAnnualReport(){
+  if(!STATE.annual){toast('حمّل التقرير السنوي أولًا.',true);return}
+  const r=STATE.annual,s=r.summary,cur=STATE.boot.settings.currency;
+  const monthNames=['جانفي','فيفري','مارس','أفريل','ماي','جوان','جويلية','أوت','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+  const summary=`<div class="print-cards"><div><b>المبيعات</b><span>${money(s.sales,cur)}</span></div><div><b>المشتريات</b><span>${money(s.purchases,cur)}</span></div><div><b>الربح</b><span>${money(s.profit,cur)}</span></div><div><b>تقدير الزكاة</b><span>${money(s.zakatEstimate,cur)}</span></div></div>`;
+  const months=`<h3>التفاصيل الشهرية</h3><table><thead><tr><th>الشهر</th><th>المبيعات</th><th>المشتريات</th><th>الربح</th><th>TVA محصلة</th><th>TVA مدفوعة</th></tr></thead><tbody>${r.months.map((m,i)=>`<tr><td>${monthNames[i]}</td><td>${money(m.sales,cur)}</td><td>${money(m.purchases,cur)}</td><td>${money(m.profit,cur)}</td><td>${money(m.tvaCollected,cur)}</td><td>${money(m.tvaPaid,cur)}</td></tr>`).join('')}</tbody></table>`;
+  const branches=`<h3>حسب الفرع</h3><table><thead><tr><th>الفرع</th><th>المبيعات</th><th>المشتريات</th><th>الربح</th></tr></thead><tbody>${(r.branches||[]).map(b=>`<tr><td>${esc(b.branchName)}</td><td>${money(b.sales,cur)}</td><td>${money(b.purchases,cur)}</td><td>${money(b.profit,cur)}</td></tr>`).join('')}</tbody></table>`;
+  openPrintWindow(buildClientPrintShell('التقرير السنوي '+r.year,summary+months+branches+`<p class="note">تقدير الزكاة إرشادي بنسبة ${num(s.zakatRate)}% من الربح الموجب.</p>`),'التقرير السنوي '+r.year);
+}
+
+function buildClientPrintShell(title,body){
+  const c=Object.assign({},DEFAULT_COMPANY,STATE.boot?.settings||{});
+  return `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>${esc(title)}</title><style>@page{size:A4;margin:12mm}*{box-sizing:border-box}body{font-family:Tahoma,Arial,sans-serif;color:#17212b;margin:0;font-size:11px}.head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #2563eb;padding-bottom:12px;margin-bottom:16px}.head img{width:85px;height:85px;object-fit:contain}.head h1{font-size:20px;margin:0 0 5px}.head p{margin:3px 0}.ids{font-size:9px;line-height:1.7}.title{text-align:center;color:#1d4ed8;font-size:20px}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:9px}th,td{border:1px solid #b8c0cc;padding:5px;text-align:right}th{background:#eaf2ff}.report-date,.note{color:#667085;margin:10px 0}.print-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.print-cards div{border:1px solid #d0d5dd;border-radius:7px;padding:10px}.print-cards b,.print-cards span{display:block}.print-cards span{font-size:14px;margin-top:5px;font-weight:bold}</style></head><body><div class="head"><div><h1>${esc(c.legalName||c.companyName)}</h1><p>${esc(c.address)}</p><div class="ids">RC: ${esc(c.rc)} | NIF: ${esc(c.nif)}<br>ART: ${esc(c.art)} | NIS: ${esc(c.nis)}</div></div>${c.logoUrl?`<img src="${escAttr(c.logoUrl)}" alt="Logo">`:''}</div><h2 class="title">${esc(title)}</h2>${body}</body></html>`;
+}
+
+function openPrintWindow(html,title,existingWindow){
+  const w=existingWindow||window.open('','_blank');
+  if(!w){toast('اسمح بالنوافذ المنبثقة للطباعة.',true);return}
+  w.document.open();w.document.write(html);w.document.close();w.document.title=title||'طباعة';
+  setTimeout(()=>{w.focus();w.print()},500);
+}
+
 async function showStatement(partyType,partyId){
-  setLoading(true);const r=await server('statement',{token:STATE.token,partyType,partyId});setLoading(false);
+  setLoading(true);const r=await server('statement',{token:STATE.token,partyType,partyId,branchId:STATE.branchId});setLoading(false);
   if(!r.ok){toast(r.message,true);return}
   const s=r.summary,cur=STATE.boot.settings.currency;
   document.getElementById('modal').innerHTML=`<div class="modal-card"><div class="modal-head"><h3>كشف الحساب</h3><button class="close" onclick="closeModal()">✕</button></div>
@@ -573,7 +730,7 @@ async function changePassword(e){
 
 async function refreshLookups(){
   const r=await server('bootstrap',{token:STATE.token});
-  if(r.ok)STATE.boot=r;
+  if(r.ok){STATE.boot=r;STATE.boot.settings=Object.assign({},DEFAULT_COMPANY,r.settings||{});setupBranchFilter();}
 }
 function lookupOptions(entity,value){
   const rows=STATE.boot.lookups[entity]||[];
@@ -675,6 +832,7 @@ function server(action,payload){
     }
   });
 }
+function localToday(){const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)}
 function val(id){return document.getElementById(id).value.trim()}
 function fieldLabel(f){return FIELD_META[f]?.label||f}
 function display(v,f){if(v===true)return'نعم';if(v===false)return'لا';if(v===null||v===undefined)return'';if(f==='ItemsJSON'){try{return JSON.parse(v).map(x=>x.name).join('، ')}catch(e){}}return String(v)}
