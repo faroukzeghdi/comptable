@@ -1,0 +1,1092 @@
+
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ZF Construction ERP</title>
+  <style>
+    :root{
+      --bg:#f3f7fc;--panel:#fff;--ink:#17212b;--muted:#667085;--brand:#2563eb;
+      --brand2:#1d4ed8;--line:#e4e7ec;--danger:#b42318;--warn:#b54708;--ok:#027a48;
+      --shadow:0 10px 30px rgba(16,24,40,.08);--radius:16px
+    }
+    *{box-sizing:border-box} body{margin:0;font-family:Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+    button,input,select,textarea{font:inherit} button{cursor:pointer} button:disabled{cursor:not-allowed;opacity:.65}
+    .hidden{display:none!important}.app{min-height:100vh}.login-wrap{min-height:100vh;display:grid;place-items:center;padding:24px;background:
+      radial-gradient(circle at 15% 10%,#93c5fd66,transparent 34%),linear-gradient(145deg,#f8fafc,#eaf2ff)}
+    .login-card{width:min(440px,100%);background:#fff;border:1px solid #ffffffaa;border-radius:24px;padding:32px;box-shadow:var(--shadow)}
+    .logo{width:58px;height:58px;border-radius:18px;background:#fff;display:grid;place-items:center;color:var(--brand);font-weight:900;font-size:18px;overflow:hidden;border:1px solid #dbeafe}.logo img{width:100%;height:100%;object-fit:contain;padding:4px}.company-mini{font-size:11px;line-height:1.7;background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:10px;margin:12px 0;color:#475467}
+    h1,h2,h3,p{margin-top:0}.login-card h1{font-size:25px;margin:18px 0 8px}.muted{color:var(--muted)}
+    label{display:block;font-size:13px;font-weight:700;margin:14px 0 7px}
+    input,select,textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:#fff;color:var(--ink);outline:none}
+    input:focus,select:focus,textarea:focus{border-color:#60a5fa;box-shadow:0 0 0 3px #dbeafe}
+    .btn{border:0;border-radius:10px;padding:10px 15px;background:#fff;color:var(--ink);border:1px solid var(--line);font-weight:700}
+    .btn-primary{background:var(--brand);color:#fff;border-color:var(--brand)}.btn-primary:hover{background:var(--brand2)}
+    .btn-danger{color:#fff;background:var(--danger);border-color:var(--danger)}.btn-sm{padding:7px 10px;font-size:12px}
+    .login-card .btn{width:100%;margin-top:18px;padding:12px}.error{background:#fef3f2;color:#b42318;border:1px solid #fecdca;border-radius:9px;padding:10px;margin-top:12px;font-size:13px}
+    .shell{display:grid;grid-template-columns:270px 1fr;min-height:100vh}.sidebar{background:#0b1f3a;color:#dbeafe;padding:20px 14px;position:sticky;top:0;height:100vh;overflow:auto}
+    .brand{display:flex;gap:12px;align-items:center;padding:4px 8px 20px;border-bottom:1px solid #ffffff18}.brand .logo{width:44px;height:44px;border-radius:13px;font-size:17px}
+    .brand strong{display:block;color:#fff}.brand small{color:#93b4df}.nav{padding-top:14px}.nav button{width:100%;border:0;background:transparent;color:#c8daf3;text-align:right;padding:10px 12px;border-radius:10px;margin:2px 0;display:flex;align-items:center;gap:10px}
+    .nav button:hover,.nav button.active{background:#ffffff13;color:#fff}.nav .sep{font-size:11px;color:#7899c5;margin:17px 12px 6px}
+    .main{min-width:0}.topbar{height:74px;background:#ffffffdd;backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:5}
+    .topbar-left,.topbar-right{display:flex;align-items:center;gap:12px}.branch-filter{min-width:190px}.branch-filter select{padding:8px 10px;font-size:12px;background:#f8fafc}.menu-btn{display:none}.avatar{width:38px;height:38px;border-radius:50%;background:#dbeafe;display:grid;place-items:center;font-weight:900;color:#1d4ed8}
+    .content{padding:24px;max-width:1700px;margin:auto}.page-head{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:20px}.page-head h2{margin:0;font-size:24px}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:0 3px 12px rgba(16,24,40,.04)}
+    .metric{display:flex;justify-content:space-between;align-items:flex-start}.metric-icon{width:42px;height:42px;border-radius:12px;background:#eff6ff;display:grid;place-items:center;font-size:20px}.metric .value{font-size:25px;font-weight:900;margin-top:12px}.metric .title{font-size:13px;color:var(--muted)}
+    .grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-top:16px}.panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px;min-width:0}
+    .panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.panel-head h3{margin:0;font-size:16px}.progress{height:8px;background:#e8eeed;border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;background:var(--brand);border-radius:99px}
+    .project-row{padding:12px 0;border-bottom:1px solid var(--line)}.project-row:last-child{border:0}.row-between{display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .badge{display:inline-flex;border-radius:99px;padding:4px 8px;font-size:11px;font-weight:800;background:#eef2f6;color:#475467}.badge.ok{background:#ecfdf3;color:#027a48}.badge.warn{background:#fffaeb;color:#b54708}.badge.danger{background:#fef3f2;color:#b42318}
+    .toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px;flex-wrap:wrap}.search{max-width:330px;position:relative}.search input{padding-right:38px}.search span{position:absolute;right:13px;top:10px}
+    .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}.data-table{width:100%;border-collapse:collapse;white-space:nowrap;background:#fff}.data-table th,.data-table td{padding:11px 12px;border-bottom:1px solid var(--line);font-size:12px;text-align:right;max-width:260px;overflow:hidden;text-overflow:ellipsis}
+    .data-table th{background:#f8fafc;position:sticky;top:0;z-index:1;color:#475467}.data-table tr:hover td{background:#f8fbff}.empty{padding:40px;text-align:center;color:var(--muted)}
+    .modal{position:fixed;inset:0;background:#10182888;display:grid;place-items:center;padding:20px;z-index:30}.modal-card{width:min(900px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:18px;box-shadow:var(--shadow)}
+    .modal-head{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:2}.modal-head h3{margin:0}
+    .modal-body{padding:20px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.form-field.full{grid-column:1/-1}.form-field label{margin:0 0 7px}.modal-foot{padding:15px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-start;gap:8px;position:sticky;bottom:0;background:#fff}
+    .close{border:0;background:#f2f4f7;border-radius:9px;width:34px;height:34px}.toast-wrap{position:fixed;left:20px;bottom:20px;z-index:50;display:grid;gap:8px}.toast{background:#101828;color:#fff;padding:12px 15px;border-radius:10px;box-shadow:var(--shadow);min-width:260px}.toast.bad{background:#7a271a}
+    .loader{position:fixed;inset:0;background:#ffffffaa;backdrop-filter:blur(2px);z-index:60;display:grid;place-items:center}.spinner{width:42px;height:42px;border:4px solid #dbeafe;border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+    .notif{padding:10px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px}.notif strong{font-size:13px}.notif p{font-size:12px;margin:4px 0;color:var(--muted)}
+    .map-box{height:320px;border-radius:12px;background:linear-gradient(135deg,#dbeafe,#eef4ff);position:relative;overflow:hidden}.map-grid{position:absolute;inset:0;background-image:linear-gradient(#fff8 1px,transparent 1px),linear-gradient(90deg,#fff8 1px,transparent 1px);background-size:35px 35px}
+    .map-pin{position:absolute;transform:translate(-50%,-50%);width:28px;height:28px;background:var(--danger);color:#fff;border-radius:50% 50% 50% 0;rotate:-45deg;display:grid;place-items:center;box-shadow:0 4px 12px #0003}.map-pin span{rotate:45deg;font-size:11px}.map-note{position:absolute;bottom:12px;right:12px;background:#ffffffdd;padding:8px 10px;border-radius:8px;font-size:11px}
+    .items-editor{border:1px solid var(--line);border-radius:12px;padding:12px}.items-head,.items-row{display:grid;grid-template-columns:2fr .8fr 1fr .9fr auto;gap:8px;align-items:end}.items-head{font-size:11px;font-weight:800;color:var(--muted);padding:0 4px 7px}.items-row{margin-bottom:8px}.items-row select{padding:10px 8px}
+    .file-drop{border:1px dashed #98a2b3;border-radius:12px;padding:16px;text-align:center;background:#f9fafb}.annual-note{background:#fffaeb;border:1px solid #fedf89;color:#7a2e0e;border-radius:10px;padding:10px 12px;font-size:12px;margin-top:14px}.summary-strip{display:flex;gap:8px;flex-wrap:wrap}.summary-strip .badge{font-size:12px;padding:7px 10px}
+    @media(max-width:1100px){.cards{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.shell{grid-template-columns:230px 1fr}}
+    @media(max-width:760px){.shell{display:block}.sidebar{position:fixed;right:-290px;width:270px;z-index:20;transition:.25s}.sidebar.open{right:0}.menu-btn{display:block}.content{padding:16px}.topbar{padding:0 14px}.cards{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.form-field.full{grid-column:auto}.page-head{align-items:flex-start}.topbar{height:auto;min-height:68px;flex-wrap:wrap;padding-top:8px;padding-bottom:8px}.topbar-left{flex:1;min-width:0;flex-wrap:wrap}.topbar-right{gap:7px}.branch-filter{width:100%;min-width:0;order:3}.branch-filter select{width:100%}.items-head{display:none}.items-row{grid-template-columns:1fr 1fr 1fr auto}.items-row .item-name{grid-column:1/-1}}
+  </style>
+</head>
+<body>
+<div id="loader" class="loader hidden"><div class="spinner"></div></div>
+<div id="toastWrap" class="toast-wrap"></div>
+
+<section id="loginView" class="login-wrap">
+  <div class="login-card">
+    <div class="logo"><img class="company-logo" src="https://drive.google.com/thumbnail?id=1np1VwVd0tAE9McDmUWSM8nBtC_2ADwlY&amp;sz=w600" alt="ATIA BELGACEM" onerror="this.remove();this.parentElement.textContent='AB'"></div>
+    <h1>نظام إدارة شركة الأشغال</h1>
+    <p class="muted">إدارة الفروع، الورشات، المالية، المخزون والموارد من مكان واحد.</p><div class="company-mini"><b>DOITA: ATIA BELGACEM</b><br>PLACE MARCHE REGUIBA W . Et OUED</div>
+    <form id="loginForm">
+      <label>البريد الإلكتروني</label>
+      <input id="loginEmail" type="email" autocomplete="username" required placeholder="admin@company.com">
+      <label>كلمة المرور</label>
+      <input id="loginPassword" type="password" autocomplete="current-password" required placeholder="••••••••">
+      <button class="btn btn-primary" type="submit">تسجيل الدخول</button>
+      <div id="loginError" class="error hidden"></div>
+      <div id="connectionInfo" class="muted" style="font-size:12px;margin-top:12px">الإصدار 1.3.2 — جارٍ التحقق من الخادم…</div>
+    </form>
+  </div>
+</section>
+
+<section id="appView" class="app hidden">
+  <div class="shell">
+    <aside id="sidebar" class="sidebar">
+      <div class="brand"><div class="logo"><img class="company-logo" src="https://drive.google.com/thumbnail?id=1np1VwVd0tAE9McDmUWSM8nBtC_2ADwlY&amp;sz=w600" alt="ATIA BELGACEM" onerror="this.remove();this.parentElement.textContent='AB'"></div><div><strong id="companyName">ERP</strong><small>Construction Management</small></div></div>
+      <nav id="nav" class="nav"></nav>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="btn menu-btn" onclick="toggleSidebar()">☰</button>
+          <div><strong id="pageTitle">لوحة القيادة</strong><div class="muted" style="font-size:12px" id="pageSubtitle"></div></div><div id="branchFilterWrap" class="branch-filter hidden"><select id="branchFilter" onchange="changeBranchFilter(this.value)"></select></div>
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-sm" onclick="openPasswordModal()">🔐</button>
+          <div class="avatar" id="avatar">م</div>
+          <div><strong id="userName" style="font-size:13px"></strong><div id="userRole" class="muted" style="font-size:11px"></div></div>
+          <button class="btn btn-sm" onclick="logout()">خروج</button>
+        </div>
+      </header>
+      <div id="content" class="content"></div>
+    </main>
+  </div>
+</section>
+
+<div id="modal" class="modal hidden"></div>
+
+<script>
+const CONFIG = {
+  // ألصق هنا رابط نشر Google Apps Script الذي ينتهي بـ /exec
+  GAS_WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbyAv55w1MVHzYrCrhOXT6K7jQEXOmdoLX2PjMbVAoBGu-ES8GIpFj0flxWnwe4QR57t-Q/exec',
+  REQUEST_TIMEOUT_MS: 60000
+};
+
+const DEFAULT_COMPANY = {
+  companyName:'ATIA BELGACEM', legalName:'DOITA: ATIA BELGACEM',
+  address:'PLACE MARCHE REGUIBA W . Et OUED', rc:'01A27189t2-00139',
+  nif:'178390800115124', art:'39080000099', nis:'197839080011530',
+  logoUrl:'https://drive.google.com/thumbnail?id=1np1VwVd0tAE9McDmUWSM8nBtC_2ADwlY&sz=w600',
+  currency:'DZD', tvaRate:19, tvaRates:[0,9,19], zakatRate:2.5
+};
+
+const API_PENDING = new Map();
+
+function isTrustedApiOrigin(origin){
+  return origin==='https://script.google.com' ||
+    /^https:\/\/(?:[a-z0-9-]+\.)*googleusercontent\.com$/i.test(origin) ||
+    /^http:\/\/(localhost|127\.0\.0\.1)(?::\d+)?$/i.test(origin);
+}
+
+window.addEventListener('message', event => {
+  const data = event.data || {};
+  if(data.channel !== 'ZF_ERP_API' || data.type !== 'RESPONSE' || !data.requestId) return;
+
+  // نتحقق أولاً من وجود طلب معلّق يحمل المعرف نفسه.
+  // بعض متصفحات الهاتف تعيد origin بالقيمة "null" لصفحات Apps Script داخل iframe.
+  const pending = API_PENDING.get(data.requestId);
+  if(!pending) return;
+  if(event.origin !== 'null' && !isTrustedApiOrigin(event.origin)) return;
+
+  clearTimeout(pending.timer);
+  API_PENDING.delete(data.requestId);
+  pending.cleanup();
+  pending.resolve(data.result || {ok:false,message:'لم يرجع الخادم أي بيانات.'});
+});
+
+const STATE = {
+  token: localStorage.getItem('zf_erp_token') || '',
+  branchId: localStorage.getItem('zf_erp_branch') || '',
+  boot: null,
+  entity: null,
+  view:'dashboard',
+  rows: [],
+  allRows: [],
+  headers: [],
+  entityCache: Object.create(null),
+  currentRecord: null,
+  searchTimer: null,
+  annual: null,
+  loadSequence: 0,
+  saving: false
+};
+
+const ENTITY_META = {
+  BRANCHES:{label:'الفروع',icon:'🏢'},
+  PROJECTS:{label:'الورشات',icon:'🚜'},
+  SUPPLIERS:{label:'الموردون',icon:'📦'},
+  CLIENTS:{label:'الزبائن',icon:'🤝'},
+  BANKS:{label:'البنوك',icon:'🏦'},
+  BANK_TRANSACTIONS:{label:'حركات البنوك',icon:'💳'},
+  CASH_TRANSACTIONS:{label:'الصندوق',icon:'💵'},
+  WORKERS:{label:'العمال',icon:'👷'},
+  EQUIPMENT:{label:'المعدات',icon:'⚙️'},
+  PURCHASE_REQUESTS:{label:'طلبات الشراء',icon:'🛒'},
+  PURCHASE_ORDERS:{label:'أوامر الشراء',icon:'📋'},
+  WAREHOUSES:{label:'المستودعات',icon:'🏬'},
+  MATERIALS:{label:'المواد',icon:'🧱'},
+  STOCK_MOVEMENTS:{label:'حركات المخزون',icon:'🔄'},
+  INVOICES:{label:'الفواتير',icon:'🧾'},
+  PAYMENTS:{label:'المدفوعات',icon:'💸'},
+  JOURNAL:{label:'القيود اليومية',icon:'📚'},
+  NOTIFICATIONS:{label:'الإشعارات',icon:'🔔'},
+  USERS:{label:'المستخدمون',icon:'👥'}
+};
+
+const FIELD_META = {
+  ID:{label:'المعرف',hidden:true}, CreatedAt:{label:'تاريخ الإنشاء',readonly:true}, UpdatedAt:{label:'آخر تحديث',readonly:true},
+  CreatedBy:{label:'أنشأه',readonly:true}, PasswordHash:{label:'',hidden:true},
+  Name:{label:'الاسم'}, Email:{label:'البريد',type:'email'}, Phone:{label:'الهاتف'}, Role:{label:'الصلاحية',select:'roles'},
+  BranchID:{label:'الفرع',select:'BRANCHES'}, ProjectID:{label:'الورشة',select:'PROJECTS'}, ClientID:{label:'الزبون',select:'CLIENTS'},
+  SupplierID:{label:'المورد',select:'SUPPLIERS'}, BankID:{label:'البنك',select:'BANKS'}, WarehouseID:{label:'المستودع',select:'WAREHOUSES'},
+  MaterialID:{label:'المادة',select:'MATERIALS'}, InvoiceID:{label:'الفاتورة',select:'INVOICES'},
+  Active:{label:'نشط',type:'checkbox'}, Read:{label:'مقروء',type:'checkbox'},
+  ProjectNo:{label:'رقم المشروع'}, ContractValue:{label:'قيمة العقد',type:'number'}, StartDate:{label:'تاريخ البداية',type:'date'},
+  EndDate:{label:'تاريخ النهاية',type:'date'}, Progress:{label:'نسبة الإنجاز %',type:'number'}, Manager:{label:'المسؤول'},
+  Status:{label:'الحالة'}, Latitude:{label:'خط العرض',type:'decimal'}, Longitude:{label:'خط الطول',type:'decimal'},
+  Expenses:{label:'المصاريف',type:'number'}, Revenues:{label:'الإيرادات',type:'number'}, Notes:{label:'ملاحظات',type:'textarea'},
+  NIF:{label:'NIF'}, NIS:{label:'NIS'}, ArticleNo:{label:'رقم المادة'}, Activity:{label:'النشاط'}, AccountNo:{label:'رقم الحساب'},
+  CurrentBalance:{label:'الرصيد الحالي',type:'number'}, OpeningBalance:{label:'الرصيد الافتتاحي',type:'number'}, Address:{label:'العنوان',type:'textarea'},
+  Date:{label:'التاريخ',type:'date'}, DueDate:{label:'تاريخ الاستحقاق',type:'date'}, Type:{label:'النوع'}, Reference:{label:'المرجع'},
+  Description:{label:'البيان',type:'textarea'}, Debit:{label:'مدين/خروج',type:'number'}, Credit:{label:'دائن/دخول',type:'number'},
+  Income:{label:'الإيراد',type:'number'}, Expense:{label:'المصروف',type:'number'}, ProjectNo:{label:'رقم المشروع'},
+  EmployeeNo:{label:'رقم العامل'}, Position:{label:'المنصب'}, Salary:{label:'الراتب',type:'number'}, Advances:{label:'السلف',type:'number'},
+  AttendanceDays:{label:'أيام الحضور',type:'number'}, AbsenceDays:{label:'أيام الغياب',type:'number'}, DocumentURL:{label:'رابط الوثائق',type:'url'},
+  Code:{label:'الرمز'}, Category:{label:'الصنف'}, CurrentLocation:{label:'المكان الحالي'}, LastMaintenance:{label:'آخر صيانة',type:'date'},
+  NextMaintenance:{label:'الصيانة القادمة',type:'date'}, Fuel:{label:'الوقود',type:'number'}, OperatingHours:{label:'ساعات التشغيل',type:'number'},
+  RequestNo:{label:'رقم الطلب'}, Requester:{label:'الطالب'}, Total:{label:'الإجمالي TTC',type:'number',readonly:true},
+  CurrentStage:{label:'مرحلة الاعتماد',readonly:true}, OrderNo:{label:'رقم أمر الشراء'}, RequestID:{label:'طلب الشراء',select:'PURCHASE_REQUESTS'},
+  ExpectedDate:{label:'تاريخ التسليم المتوقع',type:'date'}, ReceivedDate:{label:'تاريخ الاستلام',type:'date'}, Location:{label:'الموقع'},
+  Manager:{label:'المسؤول'}, Unit:{label:'الوحدة'}, MinQty:{label:'الحد الأدنى',type:'number'}, CurrentQty:{label:'الرصيد',type:'number'},
+  UnitPrice:{label:'سعر الوحدة',type:'number'}, Quantity:{label:'الكمية',type:'number'}, InvoiceNo:{label:'رقم الفاتورة'},
+  PartyType:{label:'نوع الطرف'}, PartyID:{label:'الطرف'}, InvoiceKind:{label:'نوع وثيقة الفاتورة'}, TaxRate:{label:'نظام TVA'}, ItemsJSON:{label:'تفاصيل المواد/الخدمات',type:'items'}, Subtotal:{label:'المبلغ دون ضريبة HT',type:'number'}, Discount:{label:'التخفيض (مبلغ)',type:'number'}, TVA:{label:'مبلغ TVA',type:'number',readonly:true},
+  Paid:{label:'المدفوع',type:'number'}, Balance:{label:'الباقي',type:'number',readonly:true}, AttachmentURL:{label:'رابط المرفق',type:'url'},
+  PaymentNo:{label:'رقم الدفع'}, Direction:{label:'الاتجاه'}, Method:{label:'طريقة الدفع'}, AccountType:{label:'نوع الحساب'},
+  AccountID:{label:'الحساب'}, Amount:{label:'المبلغ',type:'number'}, EntryNo:{label:'رقم القيد'}, AccountDebit:{label:'الحساب المدين'},
+  AccountCredit:{label:'الحساب الدائن'}, ReferenceType:{label:'نوع المرجع'}, ReferenceID:{label:'معرف المرجع'},
+  Title:{label:'العنوان'}, Message:{label:'الرسالة',type:'textarea'}, Link:{label:'الرابط',type:'url'},
+  CashBalance:{label:'رصيد الصندوق',type:'number'}, ProjectsCount:{label:'عدد المشاريع',type:'number'}, WorkersCount:{label:'عدد العمال',type:'number'},
+  EquipmentCount:{label:'عدد المعدات',type:'number'}, BankAccount:{label:'الحساب البنكي'}, Contact:{label:'الاتصال'},
+  Password:{label:'كلمة المرور',type:'password'}
+};
+
+const ENTITY_FIELDS = {
+  BRANCHES:['Name','Manager','Phone','BankAccount','CashBalance','Address','Active'],
+  PROJECTS:['ProjectNo','Name','ClientID','BranchID','ContractValue','StartDate','EndDate','Progress','Manager','Status','Latitude','Longitude','Expenses','Revenues','Notes'],
+  SUPPLIERS:['Name','NIF','NIS','ArticleNo','Activity','Phone','Email','AccountNo','CurrentBalance','Address','Active'],
+  CLIENTS:['Name','NIF','NIS','ArticleNo','Activity','Phone','Email','AccountNo','CurrentBalance','Address','Active'],
+  BANKS:['Name','AccountNo','BranchID','OpeningBalance','CurrentBalance','Contact','Active'],
+  BANK_TRANSACTIONS:['BankID','Date','Type','Reference','Description','Debit','Credit','Status','ProjectID'],
+  CASH_TRANSACTIONS:['BranchID','Date','Type','Reference','Description','Income','Expense','ProjectID'],
+  WORKERS:['EmployeeNo','Name','Position','BranchID','ProjectID','Salary','Advances','AttendanceDays','AbsenceDays','Phone','DocumentURL','Status'],
+  EQUIPMENT:['Code','Name','Category','Status','BranchID','ProjectID','CurrentLocation','LastMaintenance','NextMaintenance','Fuel','OperatingHours','Notes'],
+  PURCHASE_REQUESTS:['RequestNo','Date','BranchID','ProjectID','Requester','ItemsJSON','Status','Notes'],
+  PURCHASE_ORDERS:['OrderNo','RequestID','SupplierID','Date','ExpectedDate','ItemsJSON','Status','ReceivedDate','Notes'],
+  WAREHOUSES:['Code','Name','BranchID','Manager','Location','Active'],
+  MATERIALS:['Code','Name','Unit','WarehouseID','MinQty','CurrentQty','UnitPrice','Active'],
+  STOCK_MOVEMENTS:['Date','MaterialID','WarehouseID','Type','Quantity','UnitPrice','Reference','ProjectID','Notes'],
+  INVOICES:['InvoiceNo','InvoiceKind','Type','PartyType','PartyID','Date','DueDate','ProjectID','ItemsJSON','Subtotal','Discount','TaxRate','TVA','Total','Paid','Balance','Status','AttachmentURL','Notes'],
+  PAYMENTS:['PaymentNo','Date','InvoiceID','PartyType','PartyID','Direction','Method','AccountType','AccountID','Amount','Reference','Notes'],
+  JOURNAL:['EntryNo','Date','AccountDebit','AccountCredit','Description','Debit','Credit','ReferenceType','ReferenceID'],
+  USERS:['Email','Name','Role','BranchID','Password','Active']
+};
+
+const ENUMS = {
+  PROJECTS:{Status:[['ACTIVE','جارية'],['PAUSED','متوقفة'],['COMPLETED','منتهية']]},
+  BANK_TRANSACTIONS:{Type:[['DEPOSIT','إيداع'],['WITHDRAWAL','سحب'],['TRANSFER','تحويل'],['CHEQUE','شيك']],Status:[['COMPLETED','منفذة'],['PENDING','معلقة'],['REJECTED','مرفوضة']]},
+  CASH_TRANSACTIONS:{Type:[['RECEIPT','قبض'],['PAYMENT','دفع'],['ADVANCE','سلفة'],['OTHER','أخرى']]},
+  EQUIPMENT:{Status:[['AVAILABLE','متاحة'],['WORKING','تعمل'],['MAINTENANCE','صيانة'],['OUT_OF_SERVICE','خارج الخدمة']]},
+  PURCHASE_REQUESTS:{Status:[['DRAFT','مسودة'],['IN_APPROVAL','قيد الاعتماد'],['APPROVED','معتمد'],['REJECTED','مرفوض']]},
+  PURCHASE_ORDERS:{Status:[['DRAFT','مسودة'],['SENT','مرسل'],['PARTIAL','استلام جزئي'],['RECEIVED','مستلم'],['CANCELLED','ملغى']]},
+  STOCK_MOVEMENTS:{Type:[['IN','دخول'],['OUT','خروج'],['RETURN_IN','إرجاع داخل'],['ADJUST_PLUS','تسوية زيادة'],['ADJUST_MINUS','تسوية نقص']]},
+  INVOICES:{InvoiceKind:[['NORMAL','فاتورة عادية'],['PROFORMA','فاتورة شكلية'],['SITUATION','وضعية أشغال'],['FINAL','فاتورة نهائية'],['CREDIT_NOTE','إشعار دائن']],Type:[['PURCHASE','شراء'],['SALE','بيع'],['SERVICE','خدمة']],PartyType:[['SUPPLIER','مورد'],['CLIENT','زبون']],TaxRate:[['0','معفى 0%'],['9','9%'],['19','19%'],['MIXED','مختلطة']],Status:[['UNPAID','غير مدفوعة'],['PARTIAL','مدفوعة جزئيًا'],['PAID','مدفوعة'],['CANCELLED','ملغاة']]},
+  PAYMENTS:{PartyType:[['SUPPLIER','مورد'],['CLIENT','زبون']],Direction:[['OUT','دفع'],['IN','قبض']],Method:[['CASH','نقدًا'],['BANK_TRANSFER','تحويل بنكي'],['CHEQUE','شيك']],AccountType:[['BANK','بنك'],['CASH','صندوق']]},
+  USERS:{Role:Object.entries({GENERAL_MANAGER:'المدير العام',FINANCE_MANAGER:'المدير المالي',BRANCH_MANAGER:'مدير الفرع',SITE_MANAGER:'مسؤول الورشة',ACCOUNTANT:'المحاسب',STOREKEEPER:'أمين المخزن',HR_MANAGER:'مسؤول الموارد البشرية',PURCHASING:'المشتريات'})}
+};
+
+document.getElementById('loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  document.getElementById('loginError').classList.add('hidden');
+  setLoading(true);
+  try {
+    const res = await server('login',{email:val('loginEmail'),password:val('loginPassword')});
+    if(!res || !res.ok){
+      showLoginError((res && res.message) || 'تعذر تسجيل الدخول.');
+      return;
+    }
+    STATE.token=res.token;
+    localStorage.setItem('zf_erp_token',res.token);
+    await startApp();
+  } catch(err) {
+    console.error('LOGIN ERROR:',err);
+    localStorage.removeItem('zf_erp_token');
+    STATE.token='';
+    showLoginError('خطأ تسجيل الدخول: '+(err.message || String(err)));
+  } finally {
+    setLoading(false);
+  }
+});
+
+window.addEventListener('load', async ()=>{
+  const info=document.getElementById('connectionInfo');
+  if(!String(CONFIG.GAS_WEB_APP_URL||'').includes('/exec')){
+    if(info) info.textContent='الخادم غير مضبوط: ألصق رابط /exec داخل GAS_WEB_APP_URL.';
+    showLoginError('الإعداد الأول: ألصق رابط Apps Script المنشور داخل GAS_WEB_APP_URL في index.html.');
+    return;
+  }
+
+  const ping=await server('ping',{});
+  if(ping && ping.ok){
+    if(info) info.textContent='✓ الخادم متصل — '+(ping.version||'Apps Script');
+  }else{
+    if(info) info.textContent='✕ تعذر الاتصال بالخادم';
+    showLoginError((ping&&ping.message) || 'تعذر الاتصال. تأكد من رابط /exec وإعداد النشر Anyone.');
+    return;
+  }
+
+  if(STATE.token) startApp();
+});
+
+async function startApp(){
+  setLoading(true);
+  try{
+    const res=await server('bootstrap',{token:STATE.token});
+
+    if(!res || !res.ok){
+      throw new Error((res && res.message) || 'تعذر تحميل بيانات النظام.');
+    }
+
+    if(!res.user || !res.settings || !res.dashboard || !res.dashboard.cards){
+      throw new Error('استجابة النظام ناقصة. شغّل setupERP ثم أعد نشر التطبيق.');
+    }
+
+    STATE.boot=res;
+    STATE.boot.settings=Object.assign({},DEFAULT_COMPANY,res.settings||{});
+    const rates=(STATE.boot.settings.tvaRates||[0,9,19]).map(String);
+    ENUMS.INVOICES.TaxRate=rates.map(v=>[v,(v==='0'?'معفى 0%':v+'%')]).concat([['MIXED','مختلطة']]);
+    const branchIds=(STATE.boot.lookups.BRANCHES||[]).map(b=>String(b.ID));
+    if(STATE.boot.user.BranchID) STATE.branchId=STATE.boot.user.BranchID;
+    else if(STATE.branchId&&!branchIds.includes(String(STATE.branchId))) STATE.branchId='';
+
+    document.getElementById('companyName').textContent=STATE.boot.settings.companyName || 'ZF ERP';
+    document.getElementById('userName').textContent=res.user.Name || res.user.Email || 'مستخدم';
+    document.getElementById('userRole').textContent=res.user.RoleName || res.user.Role || '';
+    document.getElementById('avatar').textContent=(res.user.Name || 'م').slice(0,1);
+    applyCompanyBranding();
+    setupBranchFilter();
+
+    buildNav();
+    if(STATE.branchId){
+      const filtered=await server('dashboard',{token:STATE.token,branchId:STATE.branchId});
+      showDashboard(filtered&&filtered.ok?filtered:res.dashboard);
+    }else showDashboard(res.dashboard);
+
+    // لا نخفي صفحة الدخول إلا بعد نجاح رسم لوحة القيادة.
+    document.getElementById('loginView').classList.add('hidden');
+    document.getElementById('appView').classList.remove('hidden');
+    document.getElementById('loginError').classList.add('hidden');
+  }catch(err){
+    console.error('START APP ERROR:',err);
+    localStorage.removeItem('zf_erp_token');
+    STATE.token='';
+    STATE.boot=null;
+    document.getElementById('appView').classList.add('hidden');
+    document.getElementById('loginView').classList.remove('hidden');
+    showLoginError('خطأ تحميل النظام: '+(err.message || String(err)));
+  }finally{
+    setLoading(false);
+  }
+}
+
+function applyCompanyBranding(){
+  const cfg=STATE.boot?.settings||DEFAULT_COMPANY;
+  document.querySelectorAll('.company-logo').forEach(img=>{if(img&&cfg.logoUrl)img.src=cfg.logoUrl});
+  document.title=(cfg.companyName||'ATIA BELGACEM')+' ERP';
+}
+
+function setupBranchFilter(){
+  const wrap=document.getElementById('branchFilterWrap'),select=document.getElementById('branchFilter');
+  const branches=STATE.boot?.lookups?.BRANCHES||[];
+  if(!branches.length){wrap.classList.add('hidden');return}
+  const canAll=['GENERAL_MANAGER','FINANCE_MANAGER'].includes(STATE.boot.user.Role);
+  select.innerHTML=(canAll?'<option value="">كل الفروع</option>':'')+branches.map(b=>`<option value="${escAttr(b.ID)}" ${String(STATE.branchId)===String(b.ID)?'selected':''}>${esc(b.Name||b.ID)}</option>`).join('');
+  if(!canAll&&STATE.boot.user.BranchID){select.value=STATE.boot.user.BranchID;STATE.branchId=STATE.boot.user.BranchID}
+  wrap.classList.toggle('hidden',branches.length<2&&!canAll);
+}
+
+async function changeBranchFilter(value){
+  STATE.branchId=value||'';
+  localStorage.setItem('zf_erp_branch',STATE.branchId);
+  // تغيير الفرع فقط هو الذي يطلب بيانات جديدة؛ لا يوجد تحديث تلقائي دوري.
+  if(STATE.view==='annualReports') await showAnnualReports();
+  else if(STATE.entity) await loadEntity({force:false});
+  else await refreshDashboard();
+}
+
+function buildNav(){
+  const nav=document.getElementById('nav');
+  const canViewZakat=STATE.boot?.user?.Role==='GENERAL_MANAGER';
+  const annualLabel=canViewZakat?'التقارير السنوية والزكاة':'التقارير السنوية';
+  const groups=[
+    ['الرئيسية',[['dashboard','لوحة القيادة','📊'],['annualReports',annualLabel,'📅']]],
+    ['العمليات',['PROJECTS','BRANCHES','PURCHASE_REQUESTS','PURCHASE_ORDERS','WAREHOUSES','MATERIALS','STOCK_MOVEMENTS']],
+    ['المالية',['SUPPLIERS','CLIENTS','BANKS','BANK_TRANSACTIONS','CASH_TRANSACTIONS','INVOICES','PAYMENTS','JOURNAL']],
+    ['الموارد',['WORKERS','EQUIPMENT','USERS','NOTIFICATIONS']]
+  ];
+  let html='';
+  groups.forEach(([title,items])=>{
+    const visible=items.filter(x=>Array.isArray(x)?(x[0]!=='annualReports'||STATE.boot.entities.includes('INVOICES')):STATE.boot.entities.includes(x));
+    if(!visible.length)return;
+    html+=`<div class="sep">${title}</div>`;
+    visible.forEach(item=>{
+      if(Array.isArray(item)){const fn=item[0]==='annualReports'?'showAnnualReports()':'showDashboard()';html+=`<button data-view="${item[0]}" onclick="${fn}"><span>${item[2]}</span>${item[1]}</button>`;}
+      else {const m=ENTITY_META[item]||{label:item,icon:'•'};html+=`<button data-view="${item}" onclick="openEntity('${item}')"><span>${m.icon}</span>${m.label}</button>`}
+    });
+  });
+  nav.innerHTML=html;
+}
+
+function setActiveNav(view){
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+function showDashboard(data){
+  setActiveNav('dashboard');STATE.entity=null;STATE.view='dashboard';
+  if(data) STATE.boot.dashboard=data;
+  const d=STATE.boot.dashboard,c=d.cards,cur=STATE.boot.settings.currency;
+  title('لوحة القيادة','نظرة شاملة على نشاط الشركة');
+  const canViewZakat=STATE.boot?.user?.Role==='GENERAL_MANAGER' && d.canViewZakat===true;
+  const metrics=[
+    ['💰','رصيد جميع البنوك',money(c.bankTotal,cur)],
+    ['📦','ديون الموردين',money(c.supplierDebt,cur)],
+    ['💵','مستحقات الزبائن',money(c.clientReceivables,cur)],
+    ['🚜','الورشات الجارية',c.activeProjects],
+    ['✅','الورشات المنتهية',c.completedProjects],
+    ['📈','ربح الشهر',money(c.monthlyProfit,cur)],
+    ['⚠️','الفواتير المتأخرة',c.overdue],
+    ['🧱','مواد تحت الحد',c.lowStock],
+    ['🔧','صيانة قريبة',c.dueMaintenance],
+    ['📅','الربح السنوي '+esc(d.year||''),money(c.annualProfit,cur)],
+    ['🧾','صافي TVA السنوي',money(c.annualTvaNet,cur)]
+  ];
+  if(canViewZakat) metrics.splice(10,0,['🕌','تقدير الزكاة '+num(c.zakatRate||2.5)+'%',money(c.zakatEstimate,cur)]);
+  const cards=metrics.map(x=>`<div class="card metric"><div><div class="title">${x[1]}</div><div class="value">${x[2]}</div></div><div class="metric-icon">${x[0]}</div></div>`).join('');
+  const projects=(d.projects||[]).slice(0,8).map(p=>`<div class="project-row">
+    <div class="row-between"><strong>${esc(p.Name||p.ProjectNo)}</strong><span class="badge ${statusClass(p.Status)}">${statusText(p.Status)}</span></div>
+    <div class="row-between" style="margin:9px 0 6px"><span class="muted" style="font-size:11px">${esc(p.Manager||'بدون مسؤول')}</span><b>${num(p.Progress)}%</b></div>
+    <div class="progress"><i style="width:${Math.min(100,num(p.Progress))}%"></i></div>
+  </div>`).join('')||'<div class="empty">لا توجد ورشات بعد.</div>';
+  const notes=(d.notifications||[]).map(n=>`<div class="notif"><div class="row-between"><strong>${esc(n.Title)}</strong><span class="badge ${n.Type==='WARNING'?'warn':''}">${esc(n.Type)}</span></div><p>${esc(n.Message)}</p></div>`).join('')||'<div class="empty">لا توجد إشعارات جديدة.</div>';
+  document.getElementById('content').innerHTML=`
+    <div class="page-head"><div><h2>مرحبًا، ${esc(STATE.boot.user.Name)}</h2><p class="muted">هذه أهم المؤشرات الحالية.</p></div><button class="btn" onclick="refreshDashboard()">تحديث ↻</button></div>
+    <div class="cards">${cards}</div>
+    <div class="grid2">
+      <section class="panel"><div class="panel-head"><h3>تقدم الورشات</h3><button class="btn btn-sm" onclick="openEntity('PROJECTS')">عرض الكل</button></div>${projects}</section>
+      <section class="panel"><div class="panel-head"><h3>الإشعارات</h3></div>${notes}</section>
+    </div>
+    <div class="grid2">
+      <section class="panel"><div class="panel-head"><h3>خريطة الورشات</h3></div>${renderMap(d.projects||[])}</section>
+      <section class="panel"><div class="panel-head"><h3>ملخص سريع</h3></div>
+        <p class="muted">اضغط على أي وحدة من القائمة الجانبية لإدارة البيانات، أو استخدم أزرار PDF وExcel لاستخراج التقارير.</p>
+        <div class="actions"><button class="btn btn-primary" onclick="openEntity('PURCHASE_REQUESTS')">إنشاء طلب شراء</button><button class="btn" onclick="showAnnualReports()">${canViewZakat?'التفاصيل السنوية والزكاة':'التفاصيل السنوية'}</button></div>
+      </section>
+    </div>`;
+}
+
+function renderMap(projects){
+  const pins=projects.filter(p=>String(p.Latitude??'').trim()&&String(p.Longitude??'').trim()).slice(0,15).map((p,i)=>{
+    const lat=num(p.Latitude),lng=num(p.Longitude);
+    const x=12+((Math.abs(lng)*17+i*13)%76),y=15+((Math.abs(lat)*11+i*19)%68);
+    const url=`https://www.google.com/maps?q=${encodeURIComponent(lat+','+lng)}`;
+    return `<a class="map-pin" style="left:${x}%;top:${y}%" href="${url}" target="_blank" title="${esc(p.Name)}"><span>${i+1}</span></a>`;
+  }).join('');
+  return `<div class="map-box"><div class="map-grid"></div>${pins}<div class="map-note">يمكن إدخال الإحداثيات بالفاصلة أو النقطة. اضغط على العلامة لفتح الموقع.</div></div>`;
+}
+
+async function refreshDashboard(){
+  setLoading(true);const r=await server('dashboard',{token:STATE.token,branchId:STATE.branchId});setLoading(false);
+  if(r.ok){STATE.boot.dashboard=r;showDashboard(r)}else toast(r.message,true);
+}
+
+async function showAnnualReports(){
+  STATE.entity=null;STATE.view='annualReports';setActiveNav('annualReports');
+  const currentYear=String(STATE.annual?.year||new Date().getFullYear());
+  const canViewZakat=STATE.boot?.user?.Role==='GENERAL_MANAGER';
+  title(canViewZakat?'التقارير السنوية والزكاة':'التقارير السنوية','تفاصيل الأرباح والضرائب حسب السنة والفرع');
+  document.getElementById('content').innerHTML=`
+    <div class="page-head"><div><h2>📅 التقرير السنوي</h2><p class="muted">${canViewZakat?'المبيعات، المشتريات، الأرباح، TVA وتقدير الزكاة.':'المبيعات، المشتريات، الأرباح وTVA.'}</p></div>
+      <div class="actions"><input id="annualYear" type="number" min="2000" max="2100" value="${escAttr(currentYear)}" style="width:120px"><button class="btn btn-primary" onclick="loadAnnualReport()">عرض</button><button class="btn" onclick="printAnnualReport()">طباعة</button></div></div>
+    <div id="annualArea"><div class="empty">جاري تحميل التقرير...</div></div>`;
+  await loadAnnualReport();
+}
+
+async function loadAnnualReport(){
+  const year=String(document.getElementById('annualYear')?.value||new Date().getFullYear());
+  setLoading(true);
+  const r=await server('annualReport',{token:STATE.token,year,branchId:STATE.branchId});
+  setLoading(false);
+  if(!r.ok){toast(r.message,true);return}
+  STATE.annual=r;
+  const s=r.summary,cur=STATE.boot.settings.currency;
+  const monthNames=['جانفي','فيفري','مارس','أفريل','ماي','جوان','جويلية','أوت','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+  const monthRows=(r.months||[]).map((m,i)=>`<tr><td>${monthNames[i]}</td><td>${money(m.sales,cur)}</td><td>${money(m.purchases,cur)}</td><td>${money(m.profit,cur)}</td><td>${money(m.tvaCollected,cur)}</td><td>${money(m.tvaPaid,cur)}</td><td>${num(m.invoiceCount)}</td></tr>`).join('');
+  const branchRows=(r.branches||[]).map(b=>`<tr><td>${esc(b.branchName)}</td><td>${money(b.sales,cur)}</td><td>${money(b.purchases,cur)}</td><td>${money(b.profit,cur)}</td><td>${num(b.invoiceCount)}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">لا توجد بيانات فروع لهذه السنة.</td></tr>';
+  const canViewZakat=STATE.boot?.user?.Role==='GENERAL_MANAGER' && r.canViewZakat===true;
+  const zakatCard=canViewZakat?`<div class="card metric"><div><div class="title">تقدير الزكاة ${num(s.zakatRate||2.5)}%</div><div class="value">${money(s.zakatEstimate,cur)}</div></div><div class="metric-icon">🕌</div></div>`:'';
+  const zakatNote=canViewZakat?`<div class="annual-note">تقدير الزكاة إرشادي ومحسوب بنسبة ${num(s.zakatRate||2.5)}% من الربح السنوي الموجب المسجل في الفواتير. الوعاء الشرعي النهائي قد يختلف حسب السيولة والمخزون والديون والمستحقات.</div>`:'';
+  document.getElementById('annualArea').innerHTML=`
+    <div class="cards">
+      <div class="card metric"><div><div class="title">إجمالي المبيعات</div><div class="value">${money(s.sales,cur)}</div></div><div class="metric-icon">📈</div></div>
+      <div class="card metric"><div><div class="title">إجمالي المشتريات/الخدمات</div><div class="value">${money(s.purchases,cur)}</div></div><div class="metric-icon">📉</div></div>
+      <div class="card metric"><div><div class="title">الربح السنوي</div><div class="value">${money(s.profit,cur)}</div></div><div class="metric-icon">💰</div></div>
+      ${zakatCard}
+      <div class="card metric"><div><div class="title">TVA محصلة</div><div class="value">${money(s.tvaCollected,cur)}</div></div><div class="metric-icon">🧾</div></div>
+      <div class="card metric"><div><div class="title">TVA مدفوعة</div><div class="value">${money(s.tvaPaid,cur)}</div></div><div class="metric-icon">📄</div></div>
+      <div class="card metric"><div><div class="title">صافي TVA</div><div class="value">${money(s.tvaNet,cur)}</div></div><div class="metric-icon">⚖️</div></div>
+      <div class="card metric"><div><div class="title">عدد الفواتير</div><div class="value">${num(s.invoiceCount)}</div></div><div class="metric-icon">#</div></div>
+    </div>
+    <div class="grid2">
+      <section class="panel"><div class="panel-head"><h3>التفاصيل الشهرية — ${esc(r.year)}</h3></div><div class="table-wrap"><table class="data-table"><thead><tr><th>الشهر</th><th>المبيعات</th><th>المشتريات</th><th>الربح</th><th>TVA محصلة</th><th>TVA مدفوعة</th><th>الفواتير</th></tr></thead><tbody>${monthRows}</tbody></table></div></section>
+      <section class="panel"><div class="panel-head"><h3>التفاصيل حسب الفرع</h3></div><div class="table-wrap"><table class="data-table"><thead><tr><th>الفرع</th><th>المبيعات</th><th>المشتريات</th><th>الربح</th><th>الفواتير</th></tr></thead><tbody>${branchRows}</tbody></table></div></section>
+    </div>
+    ${zakatNote}`;
+}
+
+async function openEntity(entity){
+  STATE.entity=entity;STATE.view=entity;setActiveNav(entity);
+  const m=ENTITY_META[entity]||{label:entity};
+  title(m.label,'إدارة السجلات والبحث والتقارير');
+  document.getElementById('content').innerHTML=`
+    <div class="page-head"><div><h2>${m.icon||''} ${m.label}</h2><p class="muted">إضافة وتعديل ومتابعة السجلات.</p></div>
+      <div class="actions">${ENTITY_FIELDS[entity]?`<button class="btn btn-primary" onclick="openForm('${entity}')">+ إضافة</button>`:''}</div></div>
+    <section class="panel">
+      <div class="toolbar">
+        <div class="search"><span>⌕</span><input id="entitySearch" placeholder="بحث سريع داخل البيانات المحمّلة..." oninput="debouncedLoad()"></div>
+        <div class="actions"><button class="btn btn-sm" onclick="printCurrentReport()">طباعة</button><button class="btn btn-sm" onclick="exportEntity('pdf')">PDF</button><button class="btn btn-sm" onclick="exportEntity('xlsx')">Excel</button><button class="btn btn-sm" onclick="loadEntity({force:true})">تحديث يدوي ↻</button></div>
+      </div>
+      <div id="tableArea"><div class="empty">جاري التحميل...</div></div>
+    </section>`;
+  await loadEntity({force:false});
+}
+
+function entityCacheKey(entity=STATE.entity){
+  return String(entity||'')+'::'+String(STATE.branchId||'ALL');
+}
+
+function applyEntitySearch(){
+  const q=(document.getElementById('entitySearch')?.value||'').trim().toLowerCase();
+  STATE.rows=q
+    ? STATE.allRows.filter(r=>Object.values(r).some(v=>display(v,'',r).toLowerCase().includes(q)))
+    : STATE.allRows.slice();
+  renderTable(STATE.headers,STATE.rows);
+}
+
+async function loadEntity(options={}){
+  const entity=STATE.entity;
+  if(!entity)return;
+  const force=options.force===true;
+  const key=entityCacheKey(entity);
+  const cached=STATE.entityCache[key];
+
+  if(cached&&!force){
+    STATE.headers=cached.headers.slice();
+    STATE.allRows=cached.rows.map(r=>Object.assign({},r));
+    applyEntitySearch();
+    return;
+  }
+
+  const sequence=++STATE.loadSequence;
+  const area=document.getElementById('tableArea');
+  if(area&&!cached)area.innerHTML='<div class="empty">جاري تحميل البيانات...</div>';
+  const r=await server('list',{token:STATE.token,entity,search:'',pageSize:500,branchId:STATE.branchId});
+
+  // تجاهل أي استجابة قديمة إذا انتقل المستخدم إلى صفحة أخرى أثناء التحميل.
+  if(sequence!==STATE.loadSequence||STATE.entity!==entity)return;
+  if(!r.ok){toast(r.message,true);return}
+
+  STATE.headers=(r.headers||[]).slice();
+  STATE.allRows=(r.rows||[]).map(row=>Object.assign({},row));
+  STATE.entityCache[key]={headers:STATE.headers.slice(),rows:STATE.allRows.map(row=>Object.assign({},row)),total:r.total||STATE.allRows.length};
+  applyEntitySearch();
+}
+
+function renderTable(headers,rows){
+  const entity=STATE.entity;
+  const useful=(ENTITY_FIELDS[entity]||headers).filter(h=>!['PasswordHash','ItemsJSON'].includes(h)).slice(0,10);
+  const head=useful.map(h=>`<th>${fieldLabel(h)}</th>`).join('');
+  const body=rows.map(r=>`<tr onclick="openForm('${entity}','${escAttr(r.ID)}')">
+    ${useful.map(h=>`<td title="${escAttr(display(r[h],h,r))}">${renderCell(r[h],h,r)}</td>`).join('')}
+    <td onclick="event.stopPropagation()">${rowActions(entity,r)}</td></tr>`).join('');
+  document.getElementById('tableArea').innerHTML=rows.length?`<div class="table-wrap"><table class="data-table"><thead><tr>${head}<th>إجراءات</th></tr></thead><tbody>${body}</tbody></table></div>`:'<div class="empty">لا توجد بيانات.</div>';
+}
+
+function rowActions(entity,r){
+  let extra='';
+  if(entity==='PURCHASE_REQUESTS'&&['IN_APPROVAL','DRAFT'].includes(r.Status)){
+    extra+=`<button class="btn btn-sm" onclick="approvePurchase('${escAttr(r.ID)}')">اعتماد</button> `;
+  }
+  if((entity==='SUPPLIERS'||entity==='CLIENTS')){
+    const t=entity==='SUPPLIERS'?'SUPPLIER':'CLIENT';
+    extra+=`<button class="btn btn-sm" onclick="showStatement('${t}','${escAttr(r.ID)}')">كشف</button> `;
+  }
+  extra+=`<button class="btn btn-sm" onclick="printRecord('${entity}','${escAttr(r.ID)}')">طباعة</button> `;
+  return extra+`<button class="btn btn-sm" onclick="openForm('${entity}','${escAttr(r.ID)}')">تعديل</button>`;
+}
+
+function openForm(entity,id){
+  const sourceRows=STATE.allRows.length?STATE.allRows:STATE.rows;
+  const record=Object.assign({},id?sourceRows.find(x=>x.ID===id)||{}:{});
+  // عند وجود فلتر فرع، نجعل الإضافة الجديدة تابعة له افتراضيًا حتى تظهر فورًا في نفس القائمة.
+  if(!id&&STATE.branchId&&(ENTITY_FIELDS[entity]||[]).includes('BranchID'))record.BranchID=STATE.branchId;
+  if(!id&&entity==='INVOICES'){record.Date=localToday();record.TaxRate=String(STATE.boot.settings.tvaRate??19);record.InvoiceKind='NORMAL';record.Type='SALE';record.PartyType='CLIENT';record.Status='UNPAID';}
+  STATE.currentRecord=record;
+  const fields=ENTITY_FIELDS[entity]||[];
+  const inputs=fields.map(f=>renderField(entity,f,record[f])).join('');
+  const upload=id?`<div class="form-field full"><label>إرفاق ملف</label><div class="file-drop"><input id="attachmentFile" type="file"><button class="btn btn-sm" type="button" onclick="uploadAttachment('${entity}','${escAttr(id)}')">رفع إلى Google Drive</button></div></div>`:'';
+  document.getElementById('modal').innerHTML=`<div class="modal-card">
+    <div class="modal-head"><h3>${id?'تعديل':'إضافة'} ${ENTITY_META[entity]?.label||entity}</h3><button class="close" onclick="closeModal()">✕</button></div>
+    <form id="recordForm" onsubmit="saveForm(event,'${entity}','${escAttr(id||'')}')">
+      <div class="modal-body"><div class="form-grid">${inputs}${upload}</div></div>
+      <div class="modal-foot"><button class="btn btn-primary" type="submit">حفظ</button>${id?`<button class="btn btn-danger" type="button" onclick="removeRecord('${entity}','${escAttr(id)}')">حذف</button>`:''}<button class="btn" type="button" onclick="closeModal()">إلغاء</button></div>
+    </form></div>`;
+  document.getElementById('modal').classList.remove('hidden');
+  if(fields.includes('ItemsJSON')) initItemsEditor(record.ItemsJSON);
+  if(entity==='INVOICES'){
+    const form=document.getElementById('recordForm');
+    ['TaxRate','Subtotal','Discount','Paid'].forEach(name=>{form.elements[name]?.addEventListener('input',recalculateInvoiceForm);form.elements[name]?.addEventListener('change',recalculateInvoiceForm)});
+    recalculateInvoiceForm();
+  }
+}
+
+function renderField(entity,field,value){
+  const meta=FIELD_META[field]||{label:field}; if(meta.hidden)return '';
+  const full=meta.type==='textarea'||meta.type==='items'||['Notes','Description','Address'].includes(field);
+  let control='';
+  const enumValues=ENUMS[entity]?.[field];
+  if(meta.type==='items'){
+    control=`<div id="itemsEditor" class="items-editor"></div><input type="hidden" name="${field}" id="${field}">`;
+  }else if(enumValues){
+    control=`<select name="${field}"><option value="">— اختر —</option>${enumValues.map(([v,l])=>`<option value="${escAttr(v)}" ${String(value)===v?'selected':''}>${esc(l)}</option>`).join('')}</select>`;
+  }else if(meta.select){
+    const options=lookupOptions(meta.select,value);
+    control=`<select name="${field}"><option value="">— اختر —</option>${options}</select>`;
+  }else if(field==='PartyID'){
+    const all=[...(STATE.boot.lookups.SUPPLIERS||[]).map(x=>[x.ID,'مورد: '+x.Name]),...(STATE.boot.lookups.CLIENTS||[]).map(x=>[x.ID,'زبون: '+x.Name])];
+    control=`<select name="${field}"><option value="">— اختر —</option>${all.map(([v,l])=>`<option value="${escAttr(v)}" ${String(value)===v?'selected':''}>${esc(l)}</option>`).join('')}</select>`;
+  }else if(meta.type==='textarea'){
+    control=`<textarea name="${field}" rows="3" ${meta.readonly?'readonly':''}>${esc(value||'')}</textarea>`;
+  }else if(meta.type==='checkbox'){
+    control=`<input name="${field}" type="checkbox" ${value===true||String(value)==='true'||(!STATE.currentRecord.ID&&field==='Active')?'checked':''}>`;
+  }else{
+    const identifierFields=new Set(['Phone','AccountNo','BankAccount','NIF','NIS','ArticleNo','ProjectNo','EmployeeNo','RequestNo','OrderNo','InvoiceNo','PaymentNo','EntryNo','Code','Contact','Reference','AccountID','AccountDebit','AccountCredit','ReferenceID']);
+    const type=meta.type==='decimal'?'text':(meta.type||'text');
+    const decimalAttrs=meta.type==='decimal'?'inputmode="decimal" placeholder="مثال: 36,7525 أو 36.7525"':'';
+    const textAttrs=identifierFields.has(field)?'inputmode="text" autocomplete="off" dir="ltr"':'';
+    control=`<input name="${field}" type="${type}" value="${escAttr(dateInput(value,type))}" ${decimalAttrs} ${textAttrs} ${meta.readonly?'readonly':''} ${field==='Password'&&!STATE.currentRecord.ID?'required':''}>`;
+  }
+  return `<div class="form-field ${full?'full':''}"><label>${meta.label||field}</label>${control}</div>`;
+}
+
+function initItemsEditor(json){
+  let items=[];try{items=JSON.parse(json||'[]')}catch(e){}
+  if(!items.length)items=[{name:'',quantity:1,unitPrice:0,taxRate:null}];
+  const box=document.getElementById('itemsEditor');
+  box.innerHTML=`<div class="items-head"><span>البيان</span><span>الكمية</span><span>سعر HT</span><span>TVA</span><span></span></div><div id="itemRows"></div><button type="button" class="btn btn-sm" onclick="addItemRow()">+ مادة / خدمة</button><div class="muted" style="font-size:11px;margin-top:8px">للفاتورة المختلطة: حدّد 0% أو 9% أو 19% لكل سطر، وسيُحسب مجموع TVA وTTC تلقائيًا بعد التخفيض.</div>`;
+  items.forEach(item=>addItemRow(item,false));syncItems();
+}
+function addItemRow(item={name:'',quantity:1,unitPrice:0,taxRate:null},shouldSync=true){
+  const d=document.createElement('div');d.className='items-row';
+  const form=document.getElementById('recordForm');
+  const invoiceRate=String(form?.elements?.TaxRate?.value??STATE.boot?.settings?.tvaRate??19);
+  const chosen=String(item.taxRate??item.TaxRate??(invoiceRate==='MIXED'?'0':invoiceRate));
+  const rates=(STATE.boot?.settings?.tvaRates||[0,9,19]).map(String);
+  if(!rates.includes(chosen)&&chosen!=='')rates.push(chosen);
+  const taxOptions=rates.map(v=>`<option value="${escAttr(v)}" ${chosen===v?'selected':''}>${v==='0'?'معفى':v+'%'}</option>`).join('');
+  d.innerHTML=`<input class="item-name" placeholder="اسم المادة أو الخدمة" value="${escAttr(item.name||item.Name||'')}" oninput="syncItems()">
+    <input class="item-qty" type="number" min="0" step="0.01" value="${num(item.quantity||item.Quantity||1)}" oninput="syncItems()">
+    <input class="item-price" type="number" min="0" step="0.01" value="${num(item.unitPrice||item.UnitPrice||0)}" oninput="syncItems()">
+    <select class="item-tax" onchange="syncItems()">${taxOptions}</select>
+    <button class="btn btn-sm" type="button" onclick="this.parentElement.remove();syncItems()">✕</button>`;
+  document.getElementById('itemRows').appendChild(d);if(shouldSync)syncItems();
+}
+function syncItems(){
+  const items=[...document.querySelectorAll('.items-row')].map(r=>({
+    name:r.querySelector('.item-name').value,
+    quantity:num(r.querySelector('.item-qty').value),
+    unitPrice:num(r.querySelector('.item-price').value),
+    taxRate:num(r.querySelector('.item-tax').value)
+  }));
+  const inp=document.getElementById('ItemsJSON');if(inp)inp.value=JSON.stringify(items);
+  recalculateInvoiceForm();
+}
+
+function recalculateInvoiceForm(){
+  if(STATE.entity!=='INVOICES')return;
+  const form=document.getElementById('recordForm');if(!form)return;
+  const rows=[...document.querySelectorAll('.items-row')];
+  const items=rows.map(r=>({
+    name:r.querySelector('.item-name').value.trim(),
+    quantity:num(r.querySelector('.item-qty').value),
+    unitPrice:num(r.querySelector('.item-price').value),
+    taxRate:num(r.querySelector('.item-tax').value)
+  }));
+  const hasItems=items.some(i=>i.name||i.unitPrice);
+  let subtotal=hasItems?items.reduce((sum,i)=>sum+i.quantity*i.unitPrice,0):num(form.elements.Subtotal?.value);
+  subtotal=round2(subtotal);
+  let discount=Math.max(0,num(form.elements.Discount?.value));
+  discount=Math.min(discount,subtotal);
+  const netHt=Math.max(0,subtotal-discount);
+  let tva=0;
+
+  if(hasItems){
+    const factor=subtotal>0?netHt/subtotal:0;
+    const usedRates=[];
+    items.forEach(i=>{
+      if(!usedRates.includes(i.taxRate))usedRates.push(i.taxRate);
+      tva+=i.quantity*i.unitPrice*factor*i.taxRate/100;
+    });
+    const summaryRate=usedRates.length>1?'MIXED':String(usedRates[0]??0);
+    if(form.elements.TaxRate)form.elements.TaxRate.value=summaryRate;
+  }else{
+    const rateRaw=String(form.elements.TaxRate?.value??'0');
+    tva=rateRaw==='MIXED'?num(form.elements.TVA?.value):netHt*num(rateRaw)/100;
+  }
+
+  tva=round2(tva);
+  const total=round2(netHt+tva);
+  const paid=num(form.elements.Paid?.value);
+  if(form.elements.Subtotal)form.elements.Subtotal.value=subtotal.toFixed(2);
+  if(form.elements.Discount)form.elements.Discount.value=discount.toFixed(2);
+  if(form.elements.TVA)form.elements.TVA.value=tva.toFixed(2);
+  if(form.elements.Total)form.elements.Total.value=total.toFixed(2);
+  if(form.elements.Balance)form.elements.Balance.value=Math.max(0,round2(total-paid)).toFixed(2);
+}
+
+async function saveForm(e,entity,id){
+  e.preventDefault();
+  if(STATE.saving)return;
+  syncItems();
+  const form=e.target,submit=form.querySelector('button[type="submit"]');
+  const data={};
+  (ENTITY_FIELDS[entity]||[]).forEach(f=>{
+    const el=form.elements[f];if(!el)return;
+    data[f]=el.type==='checkbox'?el.checked:el.value;
+  });
+  if(id)data.ID=id;
+
+  STATE.saving=true;
+  if(submit){submit.disabled=true;submit.dataset.oldText=submit.textContent;submit.textContent='جارٍ الحفظ...';}
+  try{
+    const r=await server('save',{token:STATE.token,entity,data});
+    if(!r.ok){toast(r.message,true);return}
+
+    const saved=Object.assign({},data,r.record||{});
+    STATE.loadSequence++; // يمنع طلب قائمة قديم من إخفاء السجل الذي حُفظ للتو.
+    upsertLocalRecord(entity,saved);
+    upsertLookupRecord(entity,saved);
+    if(entity==='BRANCHES')setupBranchFilter();
+
+    // الإضافة تظهر مباشرة في أول الجدول، من دون bootstrap أو إعادة تحميل تلقائي من الخادم.
+    if(!id){
+      const search=document.getElementById('entitySearch');
+      if(search)search.value='';
+    }
+    if(STATE.entity===entity)applyEntitySearch();
+    closeModal();
+    toast(r.message||'تم الحفظ.');
+  }finally{
+    STATE.saving=false;
+    if(submit&&submit.isConnected){submit.disabled=false;submit.textContent=submit.dataset.oldText||'حفظ';}
+  }
+}
+
+async function removeRecord(entity,id){
+  if(!confirm('تأكيد حذف السجل؟'))return;
+  const r=await server('remove',{token:STATE.token,entity,id});
+  if(!r.ok){toast(r.message,true);return}
+  STATE.loadSequence++;
+  removeLocalRecord(entity,id);
+  if(entity==='BRANCHES')setupBranchFilter();
+  closeModal();
+  if(STATE.entity===entity)applyEntitySearch();
+  toast(r.message||'تم حذف السجل.');
+}
+
+async function approvePurchase(id){
+  const r=await server('approvePurchase',{token:STATE.token,id});
+  toast(r.message,!r.ok);
+  if(r.ok&&r.record){
+    STATE.loadSequence++;
+    upsertLocalRecord('PURCHASE_REQUESTS',r.record);
+    upsertLookupRecord('PURCHASE_REQUESTS',r.record);
+    if(STATE.entity==='PURCHASE_REQUESTS')applyEntitySearch();
+  }
+}
+
+async function uploadAttachment(entity,recordId){
+  const f=document.getElementById('attachmentFile').files[0];if(!f){toast('اختر ملفًا.',true);return}
+  if(f.size>8*1024*1024){toast('الحد الأقصى 8MB.',true);return}
+  const dataUrl=await readFile(f);setLoading(true);
+  const r=await server('upload',{token:STATE.token,entity,recordId,name:f.name,mimeType:f.type,dataUrl});setLoading(false);
+  toast(r.message,!r.ok);if(r.ok)window.open(r.fileUrl,'_blank');
+}
+
+async function exportEntity(format){
+  setLoading(true);const r=await server('export',{token:STATE.token,entity:STATE.entity,format,branchId:STATE.branchId});setLoading(false);
+  toast(r.message,!r.ok);if(r.ok)window.open(r.fileUrl,'_blank');
+}
+
+async function printRecord(entity,id){
+  const printWindow=window.open('','_blank');
+  if(!printWindow){toast('اسمح بالنوافذ المنبثقة للطباعة.',true);return}
+  printWindow.document.write('<p style="font-family:Tahoma;text-align:center;padding:40px">جاري تجهيز الوثيقة...</p>');
+  setLoading(true);
+  const r=await server('printDocument',{token:STATE.token,entity,id,branchId:STATE.branchId});
+  setLoading(false);
+  if(!r.ok){printWindow.close();toast(r.message,true);return}
+  openPrintWindow(r.html,r.title||'وثيقة',printWindow);
+}
+
+function printCurrentReport(){
+  if(!STATE.entity||!STATE.rows.length){toast('لا توجد بيانات للطباعة.',true);return}
+  const entity=STATE.entity,m=ENTITY_META[entity]||{label:entity};
+  const headers=(ENTITY_FIELDS[entity]||Object.keys(STATE.rows[0])).filter(h=>!['PasswordHash','ItemsJSON'].includes(h)).slice(0,12);
+  const table=`<div class="report-date">عدد السجلات: ${STATE.rows.length}</div><table><thead><tr>${headers.map(h=>`<th>${esc(fieldLabel(h))}</th>`).join('')}</tr></thead><tbody>${STATE.rows.map(r=>`<tr>${headers.map(h=>`<td>${esc(display(r[h],h,r))}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  openPrintWindow(buildClientPrintShell('تقرير '+m.label,table),'تقرير '+m.label);
+}
+
+function printAnnualReport(){
+  if(!STATE.annual){toast('حمّل التقرير السنوي أولًا.',true);return}
+  const r=STATE.annual,s=r.summary,cur=STATE.boot.settings.currency;
+  const monthNames=['جانفي','فيفري','مارس','أفريل','ماي','جوان','جويلية','أوت','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+  const canViewZakat=STATE.boot?.user?.Role==='GENERAL_MANAGER' && r.canViewZakat===true;
+  const zakatPrint=canViewZakat?`<div><b>تقدير الزكاة ${num(s.zakatRate||2.5)}%</b><span>${money(s.zakatEstimate,cur)}</span></div>`:'';
+  const summary=`<div class="print-cards"><div><b>المبيعات</b><span>${money(s.sales,cur)}</span></div><div><b>المشتريات</b><span>${money(s.purchases,cur)}</span></div><div><b>الربح</b><span>${money(s.profit,cur)}</span></div>${zakatPrint}</div>`;
+  const months=`<h3>التفاصيل الشهرية</h3><table><thead><tr><th>الشهر</th><th>المبيعات</th><th>المشتريات</th><th>الربح</th><th>TVA محصلة</th><th>TVA مدفوعة</th></tr></thead><tbody>${r.months.map((m,i)=>`<tr><td>${monthNames[i]}</td><td>${money(m.sales,cur)}</td><td>${money(m.purchases,cur)}</td><td>${money(m.profit,cur)}</td><td>${money(m.tvaCollected,cur)}</td><td>${money(m.tvaPaid,cur)}</td></tr>`).join('')}</tbody></table>`;
+  const branches=`<h3>حسب الفرع</h3><table><thead><tr><th>الفرع</th><th>المبيعات</th><th>المشتريات</th><th>الربح</th></tr></thead><tbody>${(r.branches||[]).map(b=>`<tr><td>${esc(b.branchName)}</td><td>${money(b.sales,cur)}</td><td>${money(b.purchases,cur)}</td><td>${money(b.profit,cur)}</td></tr>`).join('')}</tbody></table>`;
+  const zakatNote=canViewZakat?`<p class="note">تقدير الزكاة إرشادي بنسبة ${num(s.zakatRate||2.5)}% من الربح الموجب.</p>`:'';
+  openPrintWindow(buildClientPrintShell('التقرير السنوي '+r.year,summary+months+branches+zakatNote),'التقرير السنوي '+r.year);
+}
+
+function buildClientPrintShell(title,body){
+  const c=Object.assign({},DEFAULT_COMPANY,STATE.boot?.settings||{});
+  return `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>${esc(title)}</title><style>@page{size:A4;margin:12mm}*{box-sizing:border-box}body{font-family:Tahoma,Arial,sans-serif;color:#17212b;margin:0;font-size:11px}.head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #2563eb;padding-bottom:12px;margin-bottom:16px}.head img{width:85px;height:85px;object-fit:contain}.head h1{font-size:20px;margin:0 0 5px}.head p{margin:3px 0}.ids{font-size:9px;line-height:1.7}.title{text-align:center;color:#1d4ed8;font-size:20px}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:9px}th,td{border:1px solid #b8c0cc;padding:5px;text-align:right}th{background:#eaf2ff}.report-date,.note{color:#667085;margin:10px 0}.print-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.print-cards div{border:1px solid #d0d5dd;border-radius:7px;padding:10px}.print-cards b,.print-cards span{display:block}.print-cards span{font-size:14px;margin-top:5px;font-weight:bold}</style></head><body><div class="head"><div><h1>${esc(c.legalName||c.companyName)}</h1><p>${esc(c.address)}</p><div class="ids">RC: ${esc(c.rc)} | NIF: ${esc(c.nif)}<br>ART: ${esc(c.art)} | NIS: ${esc(c.nis)}</div></div>${c.logoUrl?`<img src="${escAttr(c.logoUrl)}" alt="Logo">`:''}</div><h2 class="title">${esc(title)}</h2>${body}</body></html>`;
+}
+
+function openPrintWindow(html,title,existingWindow){
+  const w=existingWindow||window.open('','_blank');
+  if(!w){toast('اسمح بالنوافذ المنبثقة للطباعة.',true);return}
+  w.document.open();w.document.write(html);w.document.close();w.document.title=title||'طباعة';
+  setTimeout(()=>{w.focus();w.print()},500);
+}
+
+async function showStatement(partyType,partyId){
+  setLoading(true);const r=await server('statement',{token:STATE.token,partyType,partyId,branchId:STATE.branchId});setLoading(false);
+  if(!r.ok){toast(r.message,true);return}
+  const s=r.summary,cur=STATE.boot.settings.currency;
+  document.getElementById('modal').innerHTML=`<div class="modal-card"><div class="modal-head"><h3>كشف الحساب</h3><button class="close" onclick="closeModal()">✕</button></div>
+    <div class="modal-body"><div class="cards" style="grid-template-columns:repeat(3,1fr)">
+      <div class="card"><div class="muted">إجمالي الفواتير</div><h2>${money(s.total,cur)}</h2></div>
+      <div class="card"><div class="muted">المدفوع</div><h2>${money(s.paid,cur)}</h2></div>
+      <div class="card"><div class="muted">الرصيد</div><h2>${money(s.balance,cur)}</h2></div></div>
+      <h3 style="margin-top:20px">الفواتير (${r.invoices.length})</h3>${simpleTable(r.invoices,['InvoiceNo','Date','Total','Paid','Balance','Status'])}
+      <h3 style="margin-top:20px">المدفوعات (${r.payments.length})</h3>${simpleTable(r.payments,['PaymentNo','Date','Amount','Method','Reference'])}</div></div>`;
+  document.getElementById('modal').classList.remove('hidden');
+}
+
+function simpleTable(rows,headers){
+  if(!rows.length)return'<div class="empty">لا توجد بيانات.</div>';
+  return `<div class="table-wrap"><table class="data-table"><thead><tr>${headers.map(h=>`<th>${fieldLabel(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${headers.map(h=>`<td>${renderCell(r[h],h,r)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+}
+
+function openPasswordModal(){
+  document.getElementById('modal').innerHTML=`<div class="modal-card" style="max-width:520px"><div class="modal-head"><h3>تغيير كلمة المرور</h3><button class="close" onclick="closeModal()">✕</button></div>
+  <form onsubmit="changePassword(event)"><div class="modal-body"><label>كلمة المرور الحالية</label><input name="oldPassword" type="password" required><label>كلمة المرور الجديدة</label><input name="newPassword" type="password" minlength="8" required></div><div class="modal-foot"><button class="btn btn-primary">تغيير</button></div></form></div>`;
+  document.getElementById('modal').classList.remove('hidden');
+}
+async function changePassword(e){
+  e.preventDefault();const fd=new FormData(e.target);setLoading(true);
+  const r=await server('changePassword',{token:STATE.token,oldPassword:fd.get('oldPassword'),newPassword:fd.get('newPassword')});setLoading(false);
+  toast(r.message,!r.ok);if(r.ok)closeModal();
+}
+
+function upsertLocalRecord(entity,record){
+  if(!record||!record.ID)return;
+  if(STATE.entity===entity&&!STATE.headers.length)STATE.headers=['ID',...(ENTITY_FIELDS[entity]||Object.keys(record))];
+  const key=entityCacheKey(entity);
+  const current=(STATE.entity===entity?STATE.allRows:(STATE.entityCache[key]?.rows||[])).map(r=>Object.assign({},r));
+  const index=current.findIndex(r=>String(r.ID)===String(record.ID));
+  if(index>=0)current[index]=Object.assign({},current[index],record);
+  else current.unshift(Object.assign({},record));
+
+  if(STATE.entity===entity)STATE.allRows=current;
+  const headers=(STATE.entity===entity&&STATE.headers.length?STATE.headers:(STATE.entityCache[key]?.headers||Object.keys(record))).slice();
+  STATE.entityCache[key]={headers,rows:current.map(r=>Object.assign({},r)),total:current.length};
+}
+
+function removeLocalRecord(entity,id){
+  const key=entityCacheKey(entity);
+  if(STATE.entity===entity)STATE.allRows=STATE.allRows.filter(r=>String(r.ID)!==String(id));
+  if(STATE.entityCache[key]){
+    STATE.entityCache[key].rows=STATE.entityCache[key].rows.filter(r=>String(r.ID)!==String(id));
+    STATE.entityCache[key].total=STATE.entityCache[key].rows.length;
+  }
+  const lookup=STATE.boot?.lookups?.[entity];
+  if(Array.isArray(lookup))STATE.boot.lookups[entity]=lookup.filter(r=>String(r.ID)!==String(id));
+}
+
+function upsertLookupRecord(entity,record){
+  const lookup=STATE.boot?.lookups?.[entity];
+  if(!Array.isArray(lookup)||!record?.ID)return;
+  const index=lookup.findIndex(r=>String(r.ID)===String(record.ID));
+  if(index>=0)lookup[index]=Object.assign({},lookup[index],record);
+  else lookup.unshift(Object.assign({},record));
+}
+
+async function refreshLookups(){
+  // بقيت هذه الدالة للتوافق فقط؛ لا تُستدعى بعد الحفظ حتى لا نعيد bootstrap كاملًا.
+  const r=await server('bootstrap',{token:STATE.token});
+  if(r.ok){STATE.boot=r;STATE.boot.settings=Object.assign({},DEFAULT_COMPANY,r.settings||{});setupBranchFilter();}
+}
+const LOOKUP_FIELD_ENTITY={
+  BranchID:'BRANCHES',ProjectID:'PROJECTS',ClientID:'CLIENTS',SupplierID:'SUPPLIERS',
+  BankID:'BANKS',WarehouseID:'WAREHOUSES',MaterialID:'MATERIALS',InvoiceID:'INVOICES',
+  RequestID:'PURCHASE_REQUESTS'
+};
+function lookupRecordLabel(entity,r){
+  if(!r)return'';
+  const labels={
+    BRANCHES:r.Name,
+    PROJECTS:r.Name||r.ProjectNo,
+    SUPPLIERS:r.Name,
+    CLIENTS:r.Name,
+    BANKS:r.Name||r.AccountNo,
+    WAREHOUSES:r.Name||r.Code,
+    MATERIALS:r.Name||r.Code,
+    INVOICES:r.InvoiceNo,
+    PURCHASE_REQUESTS:r.RequestNo,
+    PURCHASE_ORDERS:r.OrderNo,
+    PAYMENTS:r.PaymentNo,
+    USERS:r.Name||r.Email
+  };
+  return labels[entity]||r.Name||r.ProjectNo||r.RequestNo||r.OrderNo||r.InvoiceNo||r.PaymentNo||r.Code||r.Email||r.ID;
+}
+function resolveReferenceLabel(field,value,record){
+  if(value===null||value===undefined||value==='')return'';
+  const id=String(value);
+  if(field==='PartyID'){
+    const preferred=record?.PartyType==='SUPPLIER'?'SUPPLIERS':record?.PartyType==='CLIENT'?'CLIENTS':'';
+    const entities=preferred?[preferred]:['SUPPLIERS','CLIENTS'];
+    for(const entity of entities){
+      const row=(STATE.boot?.lookups?.[entity]||[]).find(x=>String(x.ID)===id);
+      if(row)return lookupRecordLabel(entity,row);
+    }
+    for(const entity of ['SUPPLIERS','CLIENTS']){
+      const row=(STATE.boot?.lookups?.[entity]||[]).find(x=>String(x.ID)===id);
+      if(row)return lookupRecordLabel(entity,row);
+    }
+    return id;
+  }
+  const entity=LOOKUP_FIELD_ENTITY[field];
+  if(!entity)return String(value);
+  const row=(STATE.boot?.lookups?.[entity]||[]).find(x=>String(x.ID)===id);
+  return row?lookupRecordLabel(entity,row):id;
+}
+function lookupOptions(entity,value){
+  const rows=STATE.boot.lookups[entity]||[];
+  const current=String(value??'');
+  let found=false;
+  const options=rows.map(r=>{
+    const selected=current===String(r.ID);
+    if(selected)found=true;
+    return`<option value="${escAttr(r.ID)}" ${selected?'selected':''}>${esc(lookupRecordLabel(entity,r))}</option>`;
+  }).join('');
+  return options+(!found&&current?`<option value="${escAttr(current)}" selected>${esc(current)}</option>`:'');
+}
+function debouncedLoad(){
+  clearTimeout(STATE.searchTimer);
+  STATE.searchTimer=setTimeout(applyEntitySearch,120);
+}
+function closeModal(){document.getElementById('modal').classList.add('hidden');document.getElementById('modal').innerHTML=''}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open')}
+document.addEventListener('click',e=>{if(window.innerWidth>760)return;const sidebar=document.getElementById('sidebar');if(!sidebar?.classList.contains('open'))return;if(e.target.closest('#sidebar')||e.target.closest('.menu-btn'))return;sidebar.classList.remove('open')});
+function title(t,s=''){document.getElementById('pageTitle').textContent=t;document.getElementById('pageSubtitle').textContent=s}
+function showLogin(){document.getElementById('loginView').classList.remove('hidden');document.getElementById('appView').classList.add('hidden')}
+function showLoginError(m){const e=document.getElementById('loginError');e.textContent=m;e.classList.remove('hidden')}
+function logout(){server('logout',{token:STATE.token});localStorage.removeItem('zf_erp_token');STATE.token='';location.reload()}
+function setLoading(v){document.getElementById('loader').classList.toggle('hidden',!v)}
+function toast(msg,bad=false){const d=document.createElement('div');d.className='toast'+(bad?' bad':'');d.textContent=msg||'تم';document.getElementById('toastWrap').appendChild(d);setTimeout(()=>d.remove(),3500)}
+function server(action,payload){
+  return new Promise(resolve=>{
+    const url=String(CONFIG.GAS_WEB_APP_URL||'').trim();
+    if(!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec(?:\?.*)?$/.test(url)){
+      resolve({ok:false,message:'رابط Apps Script غير صالح. يجب أن يبدأ بـ https://script.google.com/macros/s/ وينتهي بـ /exec'});
+      return;
+    }
+    if(location.protocol==='file:'){
+      resolve({ok:false,message:'لا تفتح index.html بالنقر المباشر. شغّله عبر GitHub Pages.'});
+      return;
+    }
+
+    const requestId=(self.crypto&&crypto.randomUUID)
+      ? crypto.randomUUID()
+      : Date.now()+'_'+Math.random().toString(36).slice(2);
+    const frameName='zf_api_'+requestId.replace(/[^a-zA-Z0-9_]/g,'');
+
+    const iframe=document.createElement('iframe');
+    iframe.name=frameName;
+    iframe.id=frameName;
+    iframe.hidden=true;
+    iframe.setAttribute('aria-hidden','true');
+    iframe.style.display='none';
+
+    const form=document.createElement('form');
+    form.method='POST';
+    form.action=url;
+    form.target=frameName;
+    form.enctype='application/x-www-form-urlencoded';
+    form.acceptCharset='UTF-8';
+    form.style.display='none';
+
+    const fields={
+      requestId:requestId,
+      action:String(action||''),
+      payload:JSON.stringify(payload||{}),
+      origin:location.origin
+    };
+
+    Object.entries(fields).forEach(([name,value])=>{
+      const input=document.createElement('input');
+      input.type='hidden';
+      input.name=name;
+      input.value=String(value);
+      form.appendChild(input);
+    });
+
+    const cleanup=()=>{
+      try{form.remove()}catch(_){}
+      try{iframe.remove()}catch(_){}
+    };
+
+    const timer=setTimeout(()=>{
+      if(!API_PENDING.has(requestId)) return;
+      API_PENDING.delete(requestId);
+      cleanup();
+      resolve({
+        ok:false,
+        message:'لم تصل استجابة من Apps Script. افتح رابط /exec مباشرة: إن طلب تسجيل الدخول فأعد النشر باختيار Execute as me وWho has access: Anyone، ثم أنشئ إصدار نشر جديد.'
+      });
+    },CONFIG.REQUEST_TIMEOUT_MS);
+
+    API_PENDING.set(requestId,{resolve,timer,cleanup});
+    document.body.appendChild(iframe);
+    document.body.appendChild(form);
+
+    try{
+      // تأخير بسيط يضمن أن iframe أصبح هدفاً صالحاً قبل إرسال النموذج.
+      setTimeout(()=>{
+        try{
+          form.submit();
+          setTimeout(()=>{ try{form.remove()}catch(_){} },250);
+        }catch(err){
+          clearTimeout(timer);
+          API_PENDING.delete(requestId);
+          cleanup();
+          resolve({ok:false,message:'فشل إرسال الطلب إلى Apps Script: '+(err.message||String(err))});
+        }
+      },30);
+    }catch(err){
+      clearTimeout(timer);
+      API_PENDING.delete(requestId);
+      cleanup();
+      resolve({ok:false,message:'فشل تجهيز الاتصال: '+(err.message||String(err))});
+    }
+  });
+}
+function localToday(){const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)}
+function val(id){return document.getElementById(id).value.trim()}
+function fieldLabel(f){return FIELD_META[f]?.label||f}
+function display(v,f,record){
+  if(v===true)return'نعم';if(v===false)return'لا';if(v===null||v===undefined)return'';
+  if(f==='ItemsJSON'){try{return JSON.parse(v).map(x=>x.name).join('، ')}catch(e){}}
+  if(f==='PartyID'||LOOKUP_FIELD_ENTITY[f])return resolveReferenceLabel(f,v,record);
+  return String(v);
+}
+function renderCell(v,f,record){
+  const s=display(v,f,record);
+  if(['Status','Type','CurrentStage'].includes(f))return`<span class="badge ${statusClass(s)}">${esc(statusText(s))}</span>`;
+  if(typeof v==='number'||['Total','Balance','Paid','CurrentBalance','Salary','Amount','Debit','Credit'].includes(f))return esc(new Intl.NumberFormat('ar-DZ').format(num(v)));
+  return esc(s);
+}
+function statusText(s){return({ACTIVE:'جارية',PAUSED:'متوقفة',COMPLETED:'منتهية',PAID:'مدفوعة',PARTIAL:'جزئية',UNPAID:'غير مدفوعة',APPROVED:'معتمد',IN_APPROVAL:'قيد الاعتماد',REJECTED:'مرفوض',DRAFT:'مسودة',PENDING:'معلقة',RECEIVED:'مستلم',WORKING:'تعمل',MAINTENANCE:'صيانة',AVAILABLE:'متاحة',BRANCH_MANAGER:'مدير الفرع',FINANCE_MANAGER:'المدير المالي',GENERAL_MANAGER:'المدير العام',COMPLETED:'منتهية'})[s]||s}
+function statusClass(s){s=String(s).toUpperCase();if(['PAID','APPROVED','ACTIVE','COMPLETED','RECEIVED','AVAILABLE'].includes(s))return'ok';if(['PENDING','PARTIAL','IN_APPROVAL','MAINTENANCE','DRAFT'].includes(s))return'warn';if(['REJECTED','OVERDUE','CANCELLED','OUT_OF_SERVICE'].includes(s))return'danger';return''}
+function money(v,c='DZD'){return new Intl.NumberFormat('ar-DZ',{maximumFractionDigits:2}).format(num(v))+' '+c}
+function round2(v){return Math.round((num(v)+Number.EPSILON)*100)/100}
+function num(v){const n=Number(String(v??0).replace(/\s/g,'').replace(/,/g,'.'));return Number.isFinite(n)?n:0}
+function dateInput(v,type){if(type!=='date'||!v)return v||'';return String(v).slice(0,10)}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function escAttr(s){return esc(s).replace(/`/g,'&#96;')}
+function readFile(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f)})}
+window.addEventListener('unhandledrejection',e=>{
+  console.error('UNHANDLED PROMISE:',e.reason);
+  setLoading(false);
+  if(!STATE.boot) showLoginError('خطأ غير متوقع: '+((e.reason&&e.reason.message)||e.reason||'Unknown error'));
+});
+window.addEventListener('error',e=>{
+  console.error('WINDOW ERROR:',e.error||e.message);
+  setLoading(false);
+  if(!STATE.boot) showLoginError('خطأ في الواجهة: '+(e.message||'Unknown error'));
+});
+</script>
+</body>
+</html>
+F
